@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week 2 Building Smarter APIs | Backend Learning Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500&family=Prompt:wght@300;400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="home" href="index.html"><span data-mascot></span>Backend Learning Hub</a>
+    <nav class="weeknav" aria-label="สัปดาห์">
+      <a href="week1.html">Week 1</a>
+      <a href="week2.html" aria-current="page">Week 2</a>
+      <a href="week3.html">Week 3</a>
+    </nav>
+    <button class="icon-btn" type="button" data-theme-toggle>โหมดมืด</button>
+  </div>
+  <div class="readbar"></div>
+</header>
+
+<div class="wrap unit-layout">
+  <nav class="toc" aria-label="สารบัญ Week 2">
+    <details open>
+      <summary>ใน Week 2</summary>
+      <ol>
+        <li><a href="#goal">เป้าหมาย</a></li>
+        <li class="grp">แนวคิด</li>
+        <li><a href="#status">1. Request และ Status Code</a></li>
+        <li><a href="#query">2. Query Parameter</a></li>
+        <li><a href="#path">3. Path Parameter</a></li>
+        <li class="grp">ลงมือเขียน</li>
+        <li><a href="#ws1">4. Workshop 01 กรองตามประเภท</a></li>
+        <li><a href="#ws2">5. Workshop 02 ค้นหาด้วย ID</a></li>
+        <li><a href="#ws3">6. Workshop 03 เพิ่มด้วย POST</a></li>
+        <li class="grp">ทดสอบและส่งงาน</li>
+        <li><a href="#test">ทดสอบ</a></li>
+        <li><a href="#restart">ข้อมูลหายเมื่อรีสตาร์ต</a></li>
+        <li><a href="#check">ตรวจผล</a></li>
+        <li><a href="#try">ลองเอง</a></li>
+        <li><a href="#job">JOB.02 ส่งงาน</a></li>
+        <li><a href="#fix">แก้ปัญหาที่พบบ่อย</a></li>
+        <li><a href="#exit">Exit Ticket</a></li>
+      </ol>
+    </details>
+  </nav>
+
+  <main class="content">
+    <section class="unit-hero" id="goal">
+      <div>
+        <p class="wk">Week 2</p>
+        <h1>Building Smarter APIs</h1>
+        <p class="lead">API จาก Week 1 ตอบข้อมูลได้แบบเดียว สัปดาห์นี้เราทำให้มันกรองตามประเภท ค้นหาด้วย ID รับอุปกรณ์ใหม่ และบอก Client ได้ชัดว่าสำเร็จหรือผิดพลาดตรงไหน</p>
+        <div class="gain">
+          <h3>ทำงานนี้แล้วจะได้อะไร</h3>
+          <ul>
+            <li>เลือก Status Code ให้ตรงกับผลการทำงาน Client จะรู้ทันทีว่าต้องทำอะไรต่อ</li>
+            <li>รับข้อมูลจาก Client ได้ 3 ทาง คือ Query, Path และ Body</li>
+            <li>ตรวจข้อมูลก่อนบันทึก ป้องกันข้อมูลผิดเข้าระบบยืมคืน</li>
+            <li>เข้าใจว่าทำไมระบบจริงต้องมีฐานข้อมูล</li>
+          </ul>
+        </div>
+        <div class="box warn">
+          <h4>ก่อนเริ่ม</h4>
+          <p>JOB.01 ต้องทำงานได้ครบ 4 Endpoint และ push ขึ้น GitHub แล้ว ถ้ายังไม่ครบ ให้กลับไปทำ <a href="week1.html">Week 1</a> ก่อน สัปดาห์นี้ต่อยอดใน Repository เดิม</p>
+        </div>
+      </div>
+      <span data-mascot></span>
+    </section>
+
+    <section id="status">
+      <span class="stage-label">แนวคิด</span>
+      <h2>1. Request และ Status Code</h2>
+      <p>Request ทุกครั้งมี <strong>Method</strong> บอกว่าจะทำอะไร และ <strong>URL</strong> บอกว่าทำกับอะไร บางครั้งมี <strong>Body</strong> คือข้อมูลที่ส่งไปด้วย ส่วน Response มี <strong>Status Code</strong> บอกผล และ <strong>Body</strong> คือข้อมูลที่ตอบกลับ</p>
+      <div class="table-scroll"><table>
+        <thead><tr><th>Method</th><th>ใช้ทำอะไร</th><th>มี Body</th></tr></thead>
+        <tbody>
+          <tr><td><span class="m get">GET</span></td><td>ขอดูข้อมูล</td><td>ไม่มี</td></tr>
+          <tr><td><span class="m post">POST</span></td><td>สร้างข้อมูลใหม่</td><td>มี</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Status Code ที่ใช้ในวิชานี้</h3>
+      <p>เลข 3 หลัก ตัวแรกบอกกลุ่ม: 2 คือสำเร็จ, 4 คือฝั่ง Client ส่งมาผิด, 5 คือฝั่ง Server พัง</p>
+      <div class="table-scroll"><table>
+        <thead><tr><th>Status</th><th>ความหมาย</th><th>ใช้เมื่อ</th><th>ตัวอย่าง</th></tr></thead>
+        <tbody>
+          <tr><td><span class="s ok">200</span></td><td>OK</td><td>สำเร็จและมีข้อมูลตอบกลับ</td><td>GET รายการอุปกรณ์</td></tr>
+          <tr><td><span class="s ok">201</span></td><td>Created</td><td>สร้างข้อมูลใหม่สำเร็จ</td><td>POST เพิ่มอุปกรณ์</td></tr>
+          <tr><td><span class="s bad">400</span></td><td>Bad Request</td><td>ข้อมูลที่ส่งมาผิดรูปแบบหรือไม่ครบ</td><td>ID เป็น <code>abc</code>, quantity ติดลบ</td></tr>
+          <tr><td><span class="s bad">404</span></td><td>Not Found</td><td>ข้อมูลรูปแบบถูก แต่ไม่มีอยู่จริง</td><td>ค้นหา ID 9999</td></tr>
+          <tr><td><span class="s bad">500</span></td><td>Internal Server Error</td><td>โค้ดฝั่ง Server ทำงานผิดพลาด</td><td>โค้ดพังระหว่างประมวลผล</td></tr>
+        </tbody>
+      </table></div>
+      <p>ใน Express กำหนดด้วย <code>res.status()</code> ตามด้วย <code>.json()</code> ถ้าไม่กำหนด Express จะตอบ 200 ให้เอง</p>
+      <div class="code" data-nocopy><pre><code>res.json(item);                                   <span class="cm">// 200</span>
+res.status(201).json(newItem);                     <span class="cm">// 201</span>
+res.status(404).json({ message: 'ไม่พบอุปกรณ์' });  <span class="cm">// 404</span></code></pre></div>
+      <div class="chao"><span data-mascot></span><div><p class="who">เฉาก๊วยบอก</p><p>ทุกครั้งที่ตอบ error ให้มี <code>message</code> บอกเหตุผลด้วย คนที่เรียก API จะได้รู้ว่าต้องแก้อะไร แทนที่จะเห็นแค่ 400 แล้วงง</p></div></div>
+    </section>
+
+    <section id="query">
+      <h2>2. Query Parameter</h2>
+      <p>Query Parameter คือข้อมูลที่ต่อท้าย URL หลังเครื่องหมาย <code>?</code> เขียนเป็น <code>ชื่อ=ค่า</code> ถ้ามีหลายตัวคั่นด้วย <code>&amp;</code> นิยมใช้กับการ <strong>กรอง ค้นหา และเรียงลำดับ</strong></p>
+      <div class="code" data-nocopy><pre><code>GET /api/equipment?category=computer
+<span class="cm">// ใน Express อ่านได้จาก req.query</span>
+<span class="cm">// req.query = { category: 'computer' }</span></code></pre></div>
+      <div class="box note">
+        <h4>ค่าใน req.query เชื่อไม่ได้</h4>
+        <p>ผู้ใช้พิมพ์อะไรต่อท้าย URL ก็ได้ เช่น <code>?category=</code> (ว่าง) หรือ <code>?category=a&amp;category=b</code> ซึ่ง Express จะให้ค่าเป็น Array <code>['a', 'b']</code> ไม่ใช่ข้อความ ต้องตรวจก่อนนำไปใช้เสมอ</p>
+      </div>
+    </section>
+
+    <section id="path">
+      <h2>3. Path Parameter</h2>
+      <p>Path Parameter คือค่าที่เป็นส่วนหนึ่งของพาธ ใน Route ประกาศด้วย <code>:ชื่อ</code> นิยมใช้ <strong>ระบุข้อมูลชิ้นเดียว</strong></p>
+      <div class="code" data-nocopy><pre><code>GET /api/equipment/101
+<span class="cm">// Route: '/api/equipment/:id'</span>
+<span class="cm">// req.params = { id: '101' }  ← เป็นข้อความเสมอ</span></code></pre></div>
+      <div class="table-scroll"><table>
+        <thead><tr><th></th><th>Query Parameter</th><th>Path Parameter</th></tr></thead>
+        <tbody>
+          <tr><td>หน้าตา</td><td><code>/api/equipment?category=computer</code></td><td><code>/api/equipment/101</code></td></tr>
+          <tr><td>อ่านจาก</td><td><code>req.query.category</code></td><td><code>req.params.id</code></td></tr>
+          <tr><td>ใช้เมื่อ</td><td>กรองหรือค้นหา ผลอาจมีหลายรายการหรือไม่มีเลย</td><td>ระบุรายการเดียวที่รู้ตัวตนแน่นอน</td></tr>
+          <tr><td>ไม่พบข้อมูล</td><td>ตอบ 200 พร้อม <code>[]</code></td><td>ตอบ 404</td></tr>
+        </tbody>
+      </table></div>
+      <ul class="qc">
+        <li data-correct="b" data-why="ID ระบุอุปกรณ์ชิ้นเดียว จึงเป็นส่วนหนึ่งของพาธ">
+          <p class="q">ต้องการดูอุปกรณ์ ID 101 ควรใช้แบบใด</p>
+          <button type="button" data-a="a"><code>/api/equipment?id=101</code></button>
+          <button type="button" data-a="b"><code>/api/equipment/101</code></button>
+        </li>
+        <li data-correct="a" data-why="การกรองแล้วไม่เจอถือว่าทำงานถูกต้อง ผลแค่ว่างเปล่า">
+          <p class="q"><code>?category=furniture</code> แล้วไม่มีอุปกรณ์ประเภทนี้เลย ควรตอบอะไร</p>
+          <button type="button" data-a="a">200 กับ <code>[]</code></button>
+          <button type="button" data-a="b">404</button>
+        </li>
+      </ul>
+    </section>
+
+    <section id="ws1">
+      <span class="stage-label">ลงมือเขียน</span>
+      <h2>4. Workshop 01 กรองตามประเภท</h2>
+      <p>แก้ Route <code>GET /api/equipment</code> เดิม ถ้าไม่ส่ง <code>category</code> ให้ตอบทั้งหมดเหมือนเดิม ถ้าส่งมาให้ตรวจก่อนแล้วค่อยกรอง</p>
+      <p>เพิ่มฟังก์ชันช่วยตรวจข้อความไว้ใต้ Array <code>equipment</code></p>
+      <div class="code"><div class="file">server.js</div><pre><code>function isNonEmptyString(value) {
+  return typeof value === 'string' &amp;&amp; value.trim() !== '';
+}</code></pre></div>
+      <div class="code"><div class="file">server.js (แทน Route GET /api/equipment เดิม)</div><pre><code>app.get('/api/equipment', (req, res) =&gt; {
+  const { category } = req.query;
+
+  if (category === undefined) {
+    return res.json(equipment);
+  }
+
+  if (!isNonEmptyString(category)) {
+    return res.status(400).json({ message: 'category ต้องเป็นข้อความที่ไม่ว่าง' });
+  }
+
+  const keyword = category.trim().toLowerCase();
+  const result = equipment.filter(item =&gt; item.category.toLowerCase() === keyword);
+  res.json(result);
+});</code></pre></div>
+      <p><code>return</code> หน้า <code>res.json()</code> ทำให้ฟังก์ชันจบตรงนั้น ถ้าลืมใส่ โค้ดจะทำงานต่อแล้วพยายามตอบซ้ำ Express จะแจ้ง error ว่าส่ง Response ไปแล้ว</p>
+      <p><code>toLowerCase()</code> ทำให้ <code>Computer</code> กับ <code>computer</code> ค้นเจอเหมือนกัน และ <code>trim()</code> ตัดช่องว่างหัวท้ายที่เผลอพิมพ์มา</p>
+    </section>
+
+    <section id="ws2">
+      <h2>5. Workshop 02 ค้นหาด้วย ID</h2>
+      <p>ID ที่ถูกต้องในระบบนี้คือจำนวนเต็มบวก ถ้ารูปแบบผิดตอบ 400 ถ้ารูปแบบถูกแต่ไม่มีตอบ 404 เพิ่มฟังก์ชันแปลง ID ไว้ใต้ <code>isNonEmptyString</code></p>
+      <div class="code"><div class="file">server.js</div><pre><code>function parseId(value) {
+  if (!/^\d+$/.test(value)) return null;   <span class="cm">// ต้องเป็นตัวเลขล้วน</span>
+  const id = Number(value);
+  return Number.isSafeInteger(id) &amp;&amp; id &gt; 0 ? id : null;
+}</code></pre></div>
+      <details class="reveal"><summary>ทำไมไม่ใช้ Number(req.params.id) ตรง ๆ</summary>
+        <p><code>Number()</code> ยอมรับค่าแปลก ๆ หลายแบบ เช่น <code>Number('1e2')</code> ได้ 100 และ <code>Number('0x65')</code> ได้ 101 ส่วน <code>/^\d+$/</code> ยอมเฉพาะตัวเลข 0 ถึง 9 ล้วน แล้ว <code>Number.isSafeInteger()</code> กันตัวเลขยาวเกินที่ JavaScript เก็บได้แม่นยำ</p></details>
+      <p>เพิ่ม Route ค้นหาด้วย ID <strong>ต่อจาก</strong> Route <code>/api/equipment/count</code></p>
+      <div class="code"><div class="file">server.js</div><pre><code>app.get('/api/equipment/:id', (req, res) =&gt; {
+  const id = parseId(req.params.id);
+
+  if (id === null) {
+    return res.status(400).json({ message: 'ID ต้องเป็นจำนวนเต็มบวก' });
+  }
+
+  const item = equipment.find(e =&gt; e.id === id);
+
+  if (!item) {
+    return res.status(404).json({ message: `ไม่พบอุปกรณ์ ID ${id}` });
+  }
+
+  res.json(item);
+});</code></pre></div>
+      <div class="box bad">
+        <h4>/count ต้องอยู่ก่อน /:id</h4>
+        <p>Express ตรวจ Route จากบนลงล่าง ใช้ตัวแรกที่ตรง ถ้า <code>/api/equipment/:id</code> อยู่ก่อน คำว่า <code>count</code> จะถูกมองเป็น ID แล้วได้ 400 เพราะไม่ใช่ตัวเลข Route ที่พาธตายตัวต้องอยู่ก่อน Route ที่มี <code>:</code> เสมอ</p>
+      </div>
+    </section>
+
+    <section id="ws3">
+      <h2>6. Workshop 03 เพิ่มอุปกรณ์ด้วย POST</h2>
+      <h3>เปิดให้ Express อ่าน JSON</h3>
+      <p>POST ส่งข้อมูลมาใน Body ไม่ได้อยู่ใน URL Express อ่าน Body เองไม่เป็น ต้องเปิด <code>express.json()</code> ไว้ต่อจากบรรทัดสร้าง <code>app</code> แล้วจะอ่านได้จาก <code>req.body</code></p>
+      <div class="code"><div class="file">server.js</div><pre><code>const app = express();
+const PORT = 3000;
+
+app.use(express.json());</code></pre></div>
+      <h3>ตัวนับ ID</h3>
+      <p>เพิ่มตัวแปรนี้ใต้ Array <code>equipment</code> ใช้ออกเลข ID ให้อุปกรณ์ใหม่</p>
+      <div class="code"><div class="file">server.js</div><pre><code>let nextId = 104;</code></pre></div>
+      <p><code>nextId++</code> ให้ค่าปัจจุบันไปใช้ก่อน แล้วค่อยบวก 1 รอไว้ ชิ้นแรกได้ 104 ชิ้นต่อไปได้ 105</p>
+      <div class="box note">
+        <h4>ทำไมไม่ใช้ equipment.length + 1</h4>
+        <p>ตอนนี้มี 3 รายการ length + 1 ได้ 4 ซึ่งไม่ต่อจาก 103 และสัปดาห์หน้าเมื่อลบอุปกรณ์ได้ length จะลดลง ID ใหม่จะซ้ำกับของที่มีอยู่ ตัวนับที่เพิ่มขึ้นอย่างเดียวจึงปลอดภัยกว่า</p>
+      </div>
+      <h3>ตรวจข้อมูลก่อนบันทึก</h3>
+      <p>เงื่อนไขของอุปกรณ์ใหม่: <code>name</code> และ <code>category</code> เป็นข้อความที่ไม่ว่างหลัง <code>trim()</code> ส่วน <code>quantity</code> เป็นจำนวนเต็มตั้งแต่ 0 ขึ้นไป เพิ่มฟังก์ชันตรวจอีก 2 ตัว</p>
+      <div class="code"><div class="file">server.js</div><pre><code>function isValidQuantity(value) {
+  return Number.isSafeInteger(value) &amp;&amp; value &gt;= 0;
+}
+
+function isPlainObject(value) {
+  return value !== null &amp;&amp; typeof value === 'object' &amp;&amp; !Array.isArray(value);
+}</code></pre></div>
+      <p><code>Number.isSafeInteger("3")</code> ได้ <code>false</code> เพราะ <code>"3"</code> เป็นข้อความ ไม่ใช่ตัวเลข ใน JSON ต้องเขียน <code>"quantity": 3</code> ไม่มีเครื่องหมายคำพูด</p>
+      <div class="code"><div class="file">server.js</div><pre><code>app.post('/api/equipment', (req, res) =&gt; {
+  const body = req.body;
+
+  if (!isPlainObject(body)) {
+    return res.status(400).json({ message: 'Body ต้องเป็น JSON Object' });
+  }
+
+  const { name, category, quantity } = body;
+
+  if (!isNonEmptyString(name)) {
+    return res.status(400).json({ message: 'name ต้องเป็นข้อความที่ไม่ว่าง' });
+  }
+  if (!isNonEmptyString(category)) {
+    return res.status(400).json({ message: 'category ต้องเป็นข้อความที่ไม่ว่าง' });
+  }
+  if (!isValidQuantity(quantity)) {
+    return res.status(400).json({ message: 'quantity ต้องเป็นจำนวนเต็มตั้งแต่ 0 ขึ้นไป' });
+  }
+
+  const newItem = {
+    id: nextId++,
+    name: name.trim(),
+    category: category.trim(),
+    quantity
+  };
+
+  equipment.push(newItem);
+  res.status(201).json(newItem);
+});</code></pre></div>
+      <p><code>isPlainObject</code> ตรวจก่อนเพราะถ้าไม่ได้ส่ง Body มาเลย Express 5 ให้ <code>req.body</code> เป็น <code>undefined</code> ถ้าเอาไปแยกค่าด้วย <code>const { name } = req.body</code> ทันที Server จะพังเป็น 500</p>
+      <h3>จัดการ JSON รูปแบบผิด</h3>
+      <p>ถ้า Client ส่ง JSON ที่เขียนผิด เช่น ลืมปิดวงเล็บ <code>express.json()</code> จะโยน error ออกมา ให้เพิ่ม Error handler ไว้ <strong>หลัง Route ทั้งหมด</strong> ก่อน <code>app.listen()</code></p>
+      <div class="code"><div class="file">server.js</div><pre><code>app.use((err, req, res, next) =&gt; {
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ message: 'รูปแบบ JSON ไม่ถูกต้อง' });
+  }
+  console.error(err);
+  res.status(500).json({ message: 'เกิดข้อผิดพลาดที่ Server' });
+});</code></pre></div>
+      <p>Error handler ต้องมีพารามิเตอร์ครบ 4 ตัว Express จึงรู้ว่าเป็นตัวจัดการ error แม้จะไม่ได้ใช้ <code>next</code> ก็ตาม</p>
+      <details class="reveal"><summary>ดู server.js ฉบับเต็มของ Week 2</summary>
+      <div class="code"><div class="file">server.js</div><pre><code>import express from 'express';
+
+const app = express();
+const PORT = 3000;
+
+app.use(express.json());
+
+const equipment = [
+  { id: 101, name: 'Notebook', category: 'computer', quantity: 5 },
+  { id: 102, name: 'Projector', category: 'display', quantity: 2 },
+  { id: 103, name: 'PC', category: 'computer', quantity: 10 }
+];
+
+let nextId = 104;
+
+function isNonEmptyString(value) {
+  return typeof value === 'string' &amp;&amp; value.trim() !== '';
+}
+
+function parseId(value) {
+  if (!/^\d+$/.test(value)) return null;
+  const id = Number(value);
+  return Number.isSafeInteger(id) &amp;&amp; id &gt; 0 ? id : null;
+}
+
+function isValidQuantity(value) {
+  return Number.isSafeInteger(value) &amp;&amp; value &gt;= 0;
+}
+
+function isPlainObject(value) {
+  return value !== null &amp;&amp; typeof value === 'object' &amp;&amp; !Array.isArray(value);
+}
+
+app.get('/', (req, res) =&gt; {
+  res.send('Hello, Backend!');
+});
+
+app.get('/api/health', (req, res) =&gt; {
+  res.json({ status: 'ok' });
+});
+
+app.get('/api/equipment', (req, res) =&gt; {
+  const { category } = req.query;
+
+  if (category === undefined) {
+    return res.json(equipment);
+  }
+
+  if (!isNonEmptyString(category)) {
+    return res.status(400).json({ message: 'category ต้องเป็นข้อความที่ไม่ว่าง' });
+  }
+
+  const keyword = category.trim().toLowerCase();
+  const result = equipment.filter(item =&gt; item.category.toLowerCase() === keyword);
+  res.json(result);
+});
+
+app.get('/api/equipment/count', (req, res) =&gt; {
+  res.json({ total: equipment.length });
+});
+
+app.get('/api/equipment/:id', (req, res) =&gt; {
+  const id = parseId(req.params.id);
+
+  if (id === null) {
+    return res.status(400).json({ message: 'ID ต้องเป็นจำนวนเต็มบวก' });
+  }
+
+  const item = equipment.find(e =&gt; e.id === id);
+
+  if (!item) {
+    return res.status(404).json({ message: `ไม่พบอุปกรณ์ ID ${id}` });
+  }
+
+  res.json(item);
+});
+
+app.post('/api/equipment', (req, res) =&gt; {
+  const body = req.body;
+
+  if (!isPlainObject(body)) {
+    return res.status(400).json({ message: 'Body ต้องเป็น JSON Object' });
+  }
+
+  const { name, category, quantity } = body;
+
+  if (!isNonEmptyString(name)) {
+    return res.status(400).json({ message: 'name ต้องเป็นข้อความที่ไม่ว่าง' });
+  }
+  if (!isNonEmptyString(category)) {
+    return res.status(400).json({ message: 'category ต้องเป็นข้อความที่ไม่ว่าง' });
+  }
+  if (!isValidQuantity(quantity)) {
+    return res.status(400).json({ message: 'quantity ต้องเป็นจำนวนเต็มตั้งแต่ 0 ขึ้นไป' });
+  }
+
+  const newItem = {
+    id: nextId++,
+    name: name.trim(),
+    category: category.trim(),
+    quantity
+  };
+
+  equipment.push(newItem);
+  res.status(201).json(newItem);
+});
+
+app.use((err, req, res, next) =&gt; {
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ message: 'รูปแบบ JSON ไม่ถูกต้อง' });
+  }
+  console.error(err);
+  res.status(500).json({ message: 'เกิดข้อผิดพลาดที่ Server' });
+});
+
+app.listen(PORT, () =&gt; {
+  console.log(`Server running at http://localhost:${PORT}`);
+});</code></pre></div>
+      </details>
+    </section>
+
+    <section id="test">
+      <span class="stage-label">ทดสอบ</span>
+      <h2>ทดสอบ</h2>
+      <p>ส่ง POST ใน Thunder Client: เลือก Method เป็น POST ใส่ URL แล้วไปที่แท็บ <strong>Body</strong> เลือก <strong>JSON</strong> วางข้อมูลแล้วกด Send</p>
+      <div class="code"><div class="file">Body (JSON)</div><pre><code>{
+  "name": "Speaker",
+  "category": "audio",
+  "quantity": 3
+}</code></pre></div>
+      <p>ทดสอบตามลำดับหลังรีสตาร์ต Server แล้วเทียบกับผลที่คาดหวัง</p>
+      <div class="table-scroll"><table>
+        <thead><tr><th>#</th><th>Request</th><th>ผลที่คาดหวัง</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><span class="m get">GET</span> <code>/api/equipment?category=computer</code></td><td><span class="s ok">200</span> Notebook และ PC</td></tr>
+          <tr><td>2</td><td><span class="m get">GET</span> <code>/api/equipment?category=</code></td><td><span class="s bad">400</span></td></tr>
+          <tr><td>3</td><td><span class="m get">GET</span> <code>/api/equipment/count</code></td><td><span class="s ok">200</span> <code>{"total":3}</code></td></tr>
+          <tr><td>4</td><td><span class="m get">GET</span> <code>/api/equipment/101</code></td><td><span class="s ok">200</span> Notebook</td></tr>
+          <tr><td>5</td><td><span class="m get">GET</span> <code>/api/equipment/abc</code></td><td><span class="s bad">400</span></td></tr>
+          <tr><td>6</td><td><span class="m get">GET</span> <code>/api/equipment/9999</code></td><td><span class="s bad">404</span></td></tr>
+          <tr><td>7</td><td><span class="m post">POST</span> <code>/api/equipment</code> Body ตามตัวอย่าง</td><td><span class="s ok">201</span> ได้ id 104</td></tr>
+          <tr><td>8</td><td><span class="m post">POST</span> Body มี <code>"quantity": "3"</code></td><td><span class="s bad">400</span></td></tr>
+          <tr><td>9</td><td><span class="m post">POST</span> Body เป็น <code>{ "name": "Mic",</code> (JSON ไม่ครบ)</td><td><span class="s bad">400</span> รูปแบบ JSON ไม่ถูกต้อง</td></tr>
+        </tbody>
+      </table></div>
+      <h3>ลองกับ API จำลอง</h3>
+      <p>ทำงานตาม <code>server.js</code> ฉบับเต็มของ Week 2 ลองกดตัวอย่าง แล้วแก้ URL หรือ Body เองได้</p>
+      <div class="lab sim" data-sim="2">
+        <div class="row">
+          <select aria-label="Method"><option>GET</option><option>POST</option></select>
+          <input class="url" type="text" value="/api/equipment?category=computer" aria-label="URL">
+          <button class="btn send" type="button">Send</button>
+          <button class="btn ghost restart" type="button">รีสตาร์ต Server</button>
+        </div>
+        <div class="presets">
+          <button type="button" data-m="GET" data-u="/api/equipment?category=computer">กรอง computer</button>
+          <button type="button" data-m="GET" data-u="/api/equipment?category=a&amp;category=b">category ซ้ำ 2 ตัว</button>
+          <button type="button" data-m="GET" data-u="/api/equipment/101">ID 101</button>
+          <button type="button" data-m="GET" data-u="/api/equipment/abc">ID abc</button>
+          <button type="button" data-m="GET" data-u="/api/equipment/9999">ID 9999</button>
+          <button type="button" data-m="POST" data-u="/api/equipment" data-b='{ "name": "Speaker", "category": "audio", "quantity": 3 }'>POST ถูกต้อง</button>
+          <button type="button" data-m="POST" data-u="/api/equipment" data-b='{ "name": "Speaker", "category": "audio", "quantity": "3" }'>quantity เป็นข้อความ</button>
+          <button type="button" data-m="POST" data-u="/api/equipment" data-b='{ "name": "  ", "category": "audio", "quantity": 1 }'>name ว่าง</button>
+          <button type="button" data-m="POST" data-u="/api/equipment" data-b='{ "name": "Mic",'>JSON ไม่ครบ</button>
+        </div>
+        <label for="w2-body">Body (JSON)</label>
+        <textarea id="w2-body"></textarea>
+        <p>Response</p>
+        <div class="out res" aria-live="polite"><span class="dim">กด Send เพื่อดูผล</span></div>
+        <details class="reveal"><summary>ดูข้อมูลใน Server</summary><div class="out data"></div></details>
+      </div>
+    </section>
+
+    <section id="restart">
+      <h2>ข้อมูลหายเมื่อรีสตาร์ต</h2>
+      <p>ลอง POST อุปกรณ์ใหม่ 2 รายการ แล้ว GET <code>/api/equipment/count</code> จะได้ 5 จากนั้นบันทึกไฟล์ <code>server.js</code> อีกครั้ง (<code>node --watch</code> จะรีสตาร์ต Server) แล้ว GET ซ้ำ</p>
+      <p>ผลที่ได้คือกลับเป็น 3 รายการ เพราะ Array อยู่ใน <strong>หน่วยความจำ (RAM)</strong> ของโปรแกรม เมื่อโปรแกรมหยุด ข้อมูลก็หายไปด้วย ส่วน <code>nextId</code> ก็กลับเป็น 104 ระบบยืมคืนจริงต้องจำได้ว่าใครยืมอะไรแม้ Server จะดับ จึงต้องมี <strong>ฐานข้อมูล</strong> ซึ่งเราจะเริ่มหลัง Week 3</p>
+    </section>
+
+    <section id="check">
+      <span class="stage-label">ตรวจผล</span>
+      <h2>ตรวจผล</h2>
+      <div class="progress" data-progress="week2"><span></span></div>
+      <ul class="checklist" data-checklist="week2">
+        <li><input type="checkbox" id="w2c1"><label for="w2c1"><code>?category=computer</code> ได้ 2 รายการ และ <code>?category=Computer</code> ก็ได้เหมือนกัน</label></li>
+        <li><input type="checkbox" id="w2c2"><label for="w2c2"><code>?category=</code> ได้ 400 พร้อม message</label></li>
+        <li><input type="checkbox" id="w2c3"><label for="w2c3"><code>/api/equipment/count</code> ยังได้ <code>{"total":3}</code> ไม่กลายเป็น 400</label></li>
+        <li><input type="checkbox" id="w2c4"><label for="w2c4"><code>/api/equipment/101</code> ได้ 200</label></li>
+        <li><input type="checkbox" id="w2c5"><label for="w2c5"><code>/api/equipment/abc</code> ได้ 400 และ <code>/api/equipment/9999</code> ได้ 404</label></li>
+        <li><input type="checkbox" id="w2c6"><label for="w2c6">POST ข้อมูลถูกต้องได้ 201 และ id 104</label></li>
+        <li><input type="checkbox" id="w2c7"><label for="w2c7">POST ที่ quantity เป็นข้อความ ติดลบ หรือ name ว่าง ได้ 400</label></li>
+        <li><input type="checkbox" id="w2c8"><label for="w2c8">POST JSON รูปแบบผิดได้ 400 ไม่ใช่ 500</label></li>
+        <li><input type="checkbox" id="w2c9"><label for="w2c9">อัปเดต README ตาราง Endpoint แล้ว commit และ push</label></li>
+      </ul>
+    </section>
+
+    <section id="try">
+      <span class="stage-label">ลองเอง</span>
+      <h2>ลองเอง</h2>
+      <ol>
+        <li>ย้าย Route <code>/api/equipment/:id</code> ขึ้นไปไว้ก่อน <code>/count</code> แล้วเรียก <code>/api/equipment/count</code> ได้อะไร ทำไม จากนั้นย้ายกลับ</li>
+        <li>ส่ง POST โดย <code>quantity</code> เป็น <code>2.5</code> ได้ผลอะไร และตรงกับเงื่อนไขของงานไหม</li>
+        <li>ใน Thunder Client ไปที่แท็บ Body แล้วไม่ใส่อะไรเลย กด Send ดูว่าได้ message อะไร</li>
+      </ol>
+    </section>
+
+    <section id="job">
+      <span class="stage-label">ส่งงาน</span>
+      <h2>JOB.02 ส่งงาน</h2>
+      <div class="job">
+        <div class="head"><h3>JOB.02 Equipment API Upgrade</h3><span class="pts">20 คะแนน</span></div>
+        <p>ต่อยอด JOB.01 ใน Repository เดิม ให้ทำงานครบตามตารางนี้</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Method</th><th>Endpoint</th><th>ผลลัพธ์</th></tr></thead>
+          <tbody>
+            <tr><td><span class="m get">GET</span></td><td><code>/api/equipment</code></td><td>แสดงทั้งหมด</td></tr>
+            <tr><td><span class="m get">GET</span></td><td><code>/api/equipment?category=computer</code></td><td>กรองตามประเภท</td></tr>
+            <tr><td><span class="m get">GET</span></td><td><code>/api/equipment/count</code></td><td>จำนวนรายการ</td></tr>
+            <tr><td><span class="m get">GET</span></td><td><code>/api/equipment/:id</code></td><td>พบ <span class="s ok">200</span>, ID ผิดรูปแบบ <span class="s bad">400</span>, ไม่พบ <span class="s bad">404</span></td></tr>
+            <tr><td><span class="m post">POST</span></td><td><code>/api/equipment</code></td><td>สร้างสำเร็จ <span class="s ok">201</span>, ข้อมูลผิด <span class="s bad">400</span></td></tr>
+          </tbody>
+        </table></div>
+        <h4>เงื่อนไข</h4>
+        <ul>
+          <li><code>name</code>, <code>category</code> เป็น String ไม่ว่างหลัง <code>trim()</code></li>
+          <li><code>quantity</code> เป็นจำนวนเต็มที่ปลอดภัย ตั้งแต่ 0 ขึ้นไป</li>
+          <li>ID ใหม่ใช้ตัวนับ ไม่ใช้ <code>equipment.length + 1</code></li>
+          <li>Route <code>/api/equipment/count</code> อยู่ก่อน <code>/api/equipment/:id</code></li>
+          <li>ตรวจ Query ก่อนนำไปใช้</li>
+          <li>มี Error handler สำหรับ JSON รูปแบบผิด</li>
+        </ul>
+        <h4>หลักฐานที่ต้องส่ง</h4>
+        <ul>
+          <li>ลิงก์ Repository เดิมที่ push งาน Week 2 แล้ว</li>
+          <li>README มีตาราง Endpoint ของ Week 2</li>
+          <li>ภาพทดสอบ Thunder Client ที่เห็น Status <code>200</code>, <code>201</code>, <code>400</code> และ <code>404</code> อย่างน้อยอย่างละ 1 ภาพ</li>
+        </ul>
+        <div class="table-scroll"><table>
+          <thead><tr><th>เกณฑ์</th><th class="num">คะแนน</th></tr></thead>
+          <tbody>
+            <tr><td>GET และ Query</td><td class="num">4</td></tr>
+            <tr><td>Path และ Status</td><td class="num">4</td></tr>
+            <tr><td>POST และ Validation</td><td class="num">6</td></tr>
+            <tr><td>หลักฐานทดสอบ</td><td class="num">4</td></tr>
+            <tr><td>README และ Git</td><td class="num">2</td></tr>
+          </tbody>
+          <tfoot><tr><td>รวม</td><td class="num">20</td></tr></tfoot>
+        </table></div>
+        <p>ใช้ GenAI ช่วยได้ตามหลัก AI Work – Human Verify ถ้า AI เขียน Validation ให้ ต้องทดสอบเองครบทุกกรณีในตารางทดสอบ</p>
+      </div>
+    </section>
+
+    <section id="fix">
+      <h2>แก้ปัญหาที่พบบ่อย</h2>
+      <details class="reveal"><summary>POST แล้วได้ 400 Body ต้องเป็น JSON Object ทั้งที่ใส่ข้อมูลแล้ว</summary>
+        <p>ใน Thunder Client ต้องใส่ข้อมูลที่แท็บ Body และเลือก JSON ถ้าใส่ใน Form หรือ Text Server จะไม่ได้รับเป็น JSON ตรวจด้วยว่ามี <code>app.use(express.json())</code> อยู่ก่อน Route ทั้งหมด</p></details>
+      <details class="reveal"><summary>/api/equipment/count ได้ 400 ID ต้องเป็นจำนวนเต็มบวก</summary>
+        <p>Route <code>/:id</code> อยู่ก่อน <code>/count</code> ให้ย้าย <code>/count</code> ขึ้นไปไว้ก่อน</p></details>
+      <details class="reveal"><summary>JSON ผิดรูปแบบแล้วได้หน้า HTML ยาว ๆ หรือ 500</summary>
+        <p>Error handler อยู่ผิดตำแหน่ง ต้องอยู่หลัง Route ทั้งหมด และต้องมีพารามิเตอร์ครบ 4 ตัว <code>(err, req, res, next)</code></p></details>
+      <details class="reveal"><summary>Cannot set headers after they are sent to the client</summary>
+        <p>ตอบ Response มากกว่า 1 ครั้งใน Route เดียว มักเกิดจากลืม <code>return</code> หน้า <code>res.status(400).json(...)</code> โค้ดจึงทำงานต่อไปถึงบรรทัด <code>res.json()</code> ด้านล่าง</p></details>
+      <details class="reveal"><summary>id ของอุปกรณ์ใหม่ไม่ต่อจากเดิม หรือซ้ำกัน</summary>
+        <p>ตรวจว่าใช้ <code>id: nextId++</code> และประกาศ <code>nextId</code> ด้วย <code>let</code> ไม่ใช่ <code>const</code> เพราะค่าต้องเปลี่ยนได้</p></details>
+      <details class="reveal"><summary>กรองด้วย category แล้วได้ [] ทั้งที่มีข้อมูล</summary>
+        <p>ดูตัวสะกดใน URL กับในข้อมูล เช่น <code>computer</code> กับ <code>computers</code> และตรวจว่าเปรียบเทียบหลัง <code>toLowerCase()</code> ทั้งสองฝั่ง</p></details>
+    </section>
+
+    <section id="exit">
+      <h2>Exit Ticket</h2>
+      <p>ตอบด้วยคำพูดของตัวเองสั้น ๆ แล้วกดสรุปเพื่อคัดลอกส่งครู</p>
+      <form class="exit" data-exit="week2" data-title="Week 2" data-form-url="" novalidate>
+        <div class="who">
+          <label>ชื่อ-สกุล<input type="text" name="name" autocomplete="name"></label>
+          <label>รหัสนักศึกษา<input type="text" name="sid" inputmode="numeric"></label>
+          <label>ห้อง<input type="text" name="room"></label>
+        </div>
+        <fieldset data-q>
+          <legend>1. เลือก Query หรือ Path เมื่อต้องการค้นหาอุปกรณ์ ID 101 พร้อมอธิบายเหตุผล</legend>
+          <textarea name="q1" rows="3"></textarea>
+          <p class="hint box" hidden>แนวคำตอบ: ใช้ Path คือ /api/equipment/101 เพราะ ID ระบุอุปกรณ์ชิ้นเดียวที่รู้ตัวตนแน่นอน ส่วน Query เหมาะกับการกรองหรือค้นหาที่ผลอาจมีหลายรายการ</p>
+        </fieldset>
+        <fieldset data-q>
+          <legend>2. 201, 400 และ 404 ใช้ต่างกันอย่างไร?</legend>
+          <textarea name="q2" rows="3"></textarea>
+          <p class="hint box" hidden>แนวคำตอบ: 201 สร้างข้อมูลใหม่สำเร็จ, 400 ข้อมูลที่ส่งมาผิดรูปแบบหรือไม่ครบ, 404 รูปแบบถูกแต่หาข้อมูลนั้นไม่พบ</p>
+        </fieldset>
+        <fieldset data-q>
+          <legend>3. ทำไม quantity: "3" จึงไม่ผ่าน และควรแก้ข้อมูลที่ส่งอย่างไร?</legend>
+          <textarea name="q3" rows="3"></textarea>
+          <p class="hint box" hidden>แนวคำตอบ: "3" มีเครื่องหมายคำพูดจึงเป็นข้อความ Number.isSafeInteger จึงได้ false ต้องส่งเป็นตัวเลข "quantity": 3</p>
+        </fieldset>
+        <fieldset data-q>
+          <legend>4. ถ้าส่ง POST สำเร็จแล้วรีสตาร์ต Server ข้อมูลใหม่หายเพราะอะไร?</legend>
+          <textarea name="q4" rows="3"></textarea>
+          <p class="hint box" hidden>แนวคำตอบ: ข้อมูลเก็บใน Array ซึ่งอยู่ในหน่วยความจำของโปรแกรม เมื่อ Server หยุดหน่วยความจำก็ถูกล้าง ต้องใช้ฐานข้อมูลจึงจะเก็บได้ถาวร</p>
+        </fieldset>
+        <fieldset>
+          <legend>มั่นใจแค่ไหนว่าทำ JOB.02 เองได้ (1 = ยังไม่ได้เลย, 5 = สอนเพื่อนได้)</legend>
+          <div class="fist">
+            <label><input type="radio" name="fist" value="1"> 1</label>
+            <label><input type="radio" name="fist" value="2"> 2</label>
+            <label><input type="radio" name="fist" value="3"> 3</label>
+            <label><input type="radio" name="fist" value="4"> 4</label>
+            <label><input type="radio" name="fist" value="5"> 5</label>
+          </div>
+        </fieldset>
+        <div class="row"><button class="btn" type="submit">สรุปคำตอบ</button></div>
+        <p class="form-error" role="alert"></p>
+        <div class="exit-result" hidden></div>
+      </form>
+    </section>
+
+    <nav class="next" aria-label="บทถัดไป">
+      <a href="week1.html"><small>บทก่อนหน้า</small>Week 1 Hello, My First API!</a>
+      <a href="week3.html"><small>บทถัดไป</small>Week 3 Update &amp; Delete</a>
+    </nav>
+  </main>
+</div>
+
+<footer><p>31901-2005 การพัฒนาซอฟต์แวร์ด้วยเทคโนโลยี Back-End · แผนกวิชาเทคโนโลยีสารสนเทศ วิทยาลัยเทคนิคเลย</p></footer>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week 3 Update &amp; Delete | Backend Learning Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500&family=Prompt:wght@300;400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="home" href="index.html"><span data-mascot></span>Backend Learning Hub</a>
+    <nav class="weeknav" aria-label="สัปดาห์">
+      <a href="week1.html">Week 1</a>
+      <a href="week2.html">Week 2</a>
+      <a href="week3.html" aria-current="page">Week 3</a>
+    </nav>
+    <button class="icon-btn" type="button" data-theme-toggle>โหมดมืด</button>
+  </div>
+  <div class="readbar"></div>
+</header>
+
+<div class="wrap unit-layout">
+  <nav class="toc" aria-label="สารบัญ Week 3">
+    <details open>
+      <summary>ใน Week 3</summary>
+      <ol>
+        <li><a href="#goal">เป้าหมาย</a></li>
+        <li><a href="#ready">1. ตรวจความพร้อมและสำรองงาน</a></li>
+        <li class="grp">แนวคิด</li>
+        <li><a href="#crud">2. CRUD และ PATCH</a></li>
+        <li class="grp">ลงมือเขียน</li>
+        <li><a href="#patch">3. Workshop PATCH</a></li>
+        <li><a href="#test-patch">4. ทดสอบ PATCH</a></li>
+        <li><a href="#delete">5. Workshop DELETE</a></li>
+        <li class="grp">ทดสอบและส่งงาน</li>
+        <li><a href="#challenge">6. API Test Challenge</a></li>
+        <li><a href="#check">ตรวจผล</a></li>
+        <li><a href="#try">ลองเอง</a></li>
+        <li><a href="#job">JOB.03 ส่งงาน</a></li>
+        <li><a href="#fix">แก้ปัญหาที่พบบ่อย</a></li>
+        <li><a href="#exit">Exit Ticket</a></li>
+      </ol>
+    </details>
+  </nav>
+
+  <main class="content">
+    <section class="unit-hero" id="goal">
+      <div>
+        <p class="wk">Week 3</p>
+        <h1>Update &amp; Delete</h1>
+        <p class="lead">ในระบบยืมคืนจริง จำนวนอุปกรณ์เปลี่ยนทุกวัน และบางชิ้นต้องเลิกใช้ สัปดาห์นี้เราเติมการแก้ไขและการลบ API ของเราจะทำได้ครบ CRUD</p>
+        <div class="gain">
+          <h3>ทำงานนี้แล้วจะได้อะไร</h3>
+          <ul>
+            <li>แก้ข้อมูลเฉพาะส่วนที่เปลี่ยนด้วย PATCH โดยไม่ต้องส่งข้อมูลทั้งหมด</li>
+            <li>เขียน Validation ที่ไม่ปล่อยให้ข้อมูลเปลี่ยนไปครึ่งเดียวเมื่อเจอค่าผิด</li>
+            <li>ลบข้อมูลได้ถูกตัว ไม่ลบผิดชิ้นโดยไม่รู้ตัว</li>
+            <li>ออกแบบชุดทดสอบ API ตามลำดับและพิสูจน์ผลด้วยหลักฐาน</li>
+          </ul>
+        </div>
+        <div class="flowline" aria-label="ลำดับการเรียน"><span>เป้าหมาย</span><span>แนวคิด</span><span>ลงมือเขียน</span><span>ทดสอบ</span><span>ตรวจผล</span><span>ลองเอง</span><span>ส่งงาน</span></div>
+      </div>
+      <span data-mascot></span>
+    </section>
+
+    <section id="ready">
+      <h2>1. ตรวจความพร้อมและสำรองงาน</h2>
+      <p>สัปดาห์นี้ต่อยอดจาก JOB.02 โดยตรง ถ้างานเดิมยังไม่ผ่าน ให้กลับไปทำ <a href="week2.html">Week 2</a> ให้เรียบร้อยก่อน ตรวจด้วย Thunder Client ว่า</p>
+      <ul>
+        <li><code>GET /api/equipment/101</code> ได้ 200, <code>/abc</code> ได้ 400, <code>/9999</code> ได้ 404</li>
+        <li><code>POST /api/equipment</code> ข้อมูลถูกได้ 201 ข้อมูลผิดได้ 400</li>
+        <li>มีฟังก์ชัน <code>parseId</code>, <code>isNonEmptyString</code>, <code>isValidQuantity</code> และ <code>isPlainObject</code> อยู่ใน <code>server.js</code></li>
+      </ul>
+      <p>จากนั้น commit สำรองงานไว้ ถ้าแก้แล้วพัง จะได้ย้อนกลับมาจุดนี้ได้</p>
+      <div class="code term"><div class="file">Terminal</div><pre><code>git status
+git add .
+git commit -m "JOB.02 complete, backup before Week 3"
+git push</code></pre></div>
+      <p>ผลที่คาดหวัง: หลัง push แล้วสั่ง <code>git status</code> อีกครั้งต้องขึ้น <code>nothing to commit, working tree clean</code></p>
+    </section>
+
+    <section id="crud">
+      <span class="stage-label">แนวคิด</span>
+      <h2>2. CRUD และ PATCH</h2>
+      <p>งานเกือบทุกระบบมี 4 อย่างนี้ เรียกรวมว่า <strong>CRUD</strong></p>
+      <div class="table-scroll"><table>
+        <thead><tr><th>CRUD</th><th>Method</th><th>Endpoint ของเรา</th><th>สถานะ</th></tr></thead>
+        <tbody>
+          <tr><td>Create สร้าง</td><td><span class="m post">POST</span></td><td><code>/api/equipment</code></td><td>Week 2</td></tr>
+          <tr><td>Read อ่าน</td><td><span class="m get">GET</span></td><td><code>/api/equipment</code>, <code>/:id</code></td><td>Week 1 และ 2</td></tr>
+          <tr><td>Update แก้ไข</td><td><span class="m patch">PATCH</span></td><td><code>/api/equipment/:id</code></td><td>สัปดาห์นี้</td></tr>
+          <tr><td>Delete ลบ</td><td><span class="m delete">DELETE</span></td><td><code>/api/equipment/:id</code></td><td>สัปดาห์นี้</td></tr>
+        </tbody>
+      </table></div>
+      <h3>PATCH ต่างจาก POST และ PUT อย่างไร</h3>
+      <div class="table-scroll"><table>
+        <thead><tr><th>Method</th><th>ทำอะไร</th><th>ส่งข้อมูลแค่ไหน</th><th>ตัวอย่าง</th></tr></thead>
+        <tbody>
+          <tr><td><span class="m post">POST</span></td><td>สร้างรายการใหม่</td><td>ครบทุกฟิลด์ที่จำเป็น</td><td>รับ Speaker เข้าระบบ</td></tr>
+          <tr><td><span class="m put">PUT</span></td><td>แทนที่รายการเดิมทั้งชิ้น</td><td>ครบทุกฟิลด์</td><td>กรอกข้อมูลอุปกรณ์ใหม่ทั้งหมด</td></tr>
+          <tr><td><span class="m patch">PATCH</span></td><td>แก้บางส่วนของรายการเดิม</td><td>เฉพาะฟิลด์ที่เปลี่ยน</td><td>นับของแล้วเหลือ 8 แก้แค่ quantity</td></tr>
+        </tbody>
+      </table></div>
+      <p>คาบนี้ลงมือทำ <strong>PATCH</strong> เพราะงานจริงส่วนใหญ่แก้ทีละไม่กี่ฟิลด์ ส่วน PUT ให้รู้แนวคิดไว้ ถ้าส่ง PUT มาแค่ <code>{"quantity":8}</code> ตามหลักแล้ว name กับ category จะหายไปด้วย เพราะ PUT คือการแทนที่ทั้งชิ้น</p>
+      <ul class="qc">
+        <li data-correct="b" data-why="PATCH แก้เฉพาะฟิลด์ที่ส่งมา ฟิลด์อื่นคงค่าเดิม">
+          <p class="q">ต้องการแก้ quantity ของ Notebook เป็น 8 อย่างเดียว ควรใช้แบบใด</p>
+          <button type="button" data-a="a">POST <code>/api/equipment</code> ส่ง quantity</button>
+          <button type="button" data-a="b">PATCH <code>/api/equipment/101</code> ส่ง quantity</button>
+        </li>
+      </ul>
+    </section>
+
+    <section id="patch">
+      <span class="stage-label">ลงมือเขียน</span>
+      <h2>3. Workshop PATCH</h2>
+      <h3>กติกาของ PATCH ในงานนี้</h3>
+      <ul>
+        <li>แก้ได้เฉพาะ <code>name</code>, <code>category</code>, <code>quantity</code> ต้องส่งมาอย่างน้อย 1 ฟิลด์</li>
+        <li>ปฏิเสธฟิลด์อื่นทั้งหมด รวมถึงการพยายามแก้ <code>id</code></li>
+        <li>Body ต้องเป็น JSON Object ไม่ใช่ Array หรือ <code>null</code></li>
+        <li>ตรวจเฉพาะฟิลด์ที่ส่งมา และยอมรับ <code>quantity: 0</code></li>
+        <li>ตรวจทุกฟิลด์ให้ผ่านก่อน แล้วจึงเปลี่ยนข้อมูล ฟิลด์ที่ไม่ได้ส่งต้องคงค่าเดิม</li>
+        <li>ID ผิดรูปแบบตอบ 400 และ ID ที่ไม่มีตอบ 404</li>
+      </ul>
+      <h3>กับดัก 1: if (quantity)</h3>
+      <p>อยากรู้ว่า Client ส่ง quantity มาไหม หลายคนเขียน <code>if (quantity)</code> แต่ <code>0</code> ใน JavaScript ถือเป็นค่าเท็จ ถ้าอุปกรณ์ถูกยืมไปหมดแล้วส่ง <code>{"quantity":0}</code> มา เงื่อนไขจะเป็นเท็จ ระบบจะเข้าใจว่าไม่ได้ส่งมา แล้วไม่แก้ค่า</p>
+      <div class="code" data-nocopy><pre><code><span class="cm">// ผิด: 0 ถูกมองว่าไม่ได้ส่งมา</span>
+if (body.quantity) { ... }
+
+<span class="cm">// ถูก: ถามว่ามีฟิลด์ชื่อ quantity อยู่ใน Body หรือไม่</span>
+if (Object.hasOwn(body, 'quantity')) { ... }</code></pre></div>
+      <h3>กับดัก 2: แก้ไปครึ่งเดียว</h3>
+      <p>ถ้าตรวจไปแก้ไป เช่น แก้ name ก่อน แล้วค่อยเจอว่า quantity ติดลบ จะตอบ 400 ก็จริง แต่ name เปลี่ยนไปแล้ว ข้อมูลในระบบจึงผิด ต้องแยกเป็น 2 ขั้น: <strong>ตรวจทั้งหมดก่อน</strong> ผ่านครบแล้ว <strong>ค่อยเปลี่ยน</strong></p>
+      <div class="code" data-nocopy><pre><code><span class="cm">// ผิด: ตรวจไปแก้ไป</span>
+if (Object.hasOwn(body, 'name')) item.name = body.name.trim();
+if (!isValidQuantity(body.quantity)) return res.status(400)...  <span class="cm">// name เปลี่ยนไปแล้ว</span></code></pre></div>
+      <h3>โค้ด PATCH</h3>
+      <p>เพิ่มรายการฟิลด์ที่อนุญาตไว้ใต้ <code>let nextId = 104;</code></p>
+      <div class="code"><div class="file">server.js</div><pre><code>const ALLOWED_FIELDS = ['name', 'category', 'quantity'];</code></pre></div>
+      <p>เพิ่ม Route PATCH ต่อจาก Route POST และอยู่ก่อน Error handler</p>
+      <div class="code"><div class="file">server.js</div><pre><code>app.patch('/api/equipment/:id', (req, res) =&gt; {
+  const id = parseId(req.params.id);
+  if (id === null) {
+    return res.status(400).json({ message: 'ID ต้องเป็นจำนวนเต็มบวก' });
+  }
+
+  const item = equipment.find(e =&gt; e.id === id);
+  if (!item) {
+    return res.status(404).json({ message: `ไม่พบอุปกรณ์ ID ${id}` });
+  }
+
+  const body = req.body;
+  if (!isPlainObject(body)) {
+    return res.status(400).json({ message: 'Body ต้องเป็น JSON Object' });
+  }
+
+  const fields = Object.keys(body);
+  if (fields.length === 0) {
+    return res.status(400).json({ message: 'ต้องส่งอย่างน้อย 1 ฟิลด์: name, category หรือ quantity' });
+  }
+
+  const notAllowed = fields.filter(f =&gt; !ALLOWED_FIELDS.includes(f));
+  if (notAllowed.length &gt; 0) {
+    return res.status(400).json({ message: `ไม่อนุญาตให้แก้ฟิลด์: ${notAllowed.join(', ')}` });
+  }
+
+  <span class="cm">// ขั้นที่ 1: ตรวจทุกฟิลด์ที่ส่งมา</span>
+  if (Object.hasOwn(body, 'name') &amp;&amp; !isNonEmptyString(body.name)) {
+    return res.status(400).json({ message: 'name ต้องเป็นข้อความที่ไม่ว่าง' });
+  }
+  if (Object.hasOwn(body, 'category') &amp;&amp; !isNonEmptyString(body.category)) {
+    return res.status(400).json({ message: 'category ต้องเป็นข้อความที่ไม่ว่าง' });
+  }
+  if (Object.hasOwn(body, 'quantity') &amp;&amp; !isValidQuantity(body.quantity)) {
+    return res.status(400).json({ message: 'quantity ต้องเป็นจำนวนเต็มตั้งแต่ 0 ขึ้นไป' });
+  }
+
+  <span class="cm">// ขั้นที่ 2: ผ่านครบแล้วจึงเปลี่ยนข้อมูล</span>
+  if (Object.hasOwn(body, 'name')) item.name = body.name.trim();
+  if (Object.hasOwn(body, 'category')) item.category = body.category.trim();
+  if (Object.hasOwn(body, 'quantity')) item.quantity = body.quantity;
+
+  res.json(item);
+});</code></pre></div>
+      <p><code>Object.keys(body)</code> ให้รายชื่อฟิลด์ที่ส่งมาทั้งหมด เช่น <code>['quantity']</code> เราใช้ตรวจว่าว่างไหม และมีฟิลด์นอกรายการ <code>ALLOWED_FIELDS</code> หรือไม่ ถ้าส่ง <code>{"id":999}</code> มาจะติดตรงนี้ ID จึงแก้ไม่ได้</p>
+    </section>
+
+    <section id="test-patch">
+      <span class="stage-label">ทดสอบ</span>
+      <h2>4. ทดสอบ PATCH</h2>
+      <p>ใน Thunder Client เลือก Method เป็น <strong>PATCH</strong> ใส่ URL <code>http://localhost:3000/api/equipment/101</code> แล้วใส่ Body แบบ JSON</p>
+      <div class="table-scroll"><table>
+        <thead><tr><th>Body ที่ส่ง</th><th>ผลที่คาดหวัง</th><th>สิ่งที่ทดสอบ</th></tr></thead>
+        <tbody>
+          <tr><td><code>{"quantity":8}</code></td><td><span class="s ok">200</span> quantity เป็น 8 ชื่อยังเป็น Notebook</td><td>แก้บางฟิลด์</td></tr>
+          <tr><td><code>{"quantity":0}</code></td><td><span class="s ok">200</span> quantity เป็น 0</td><td>ยอมรับ 0</td></tr>
+          <tr><td><code>{"name":"Notebook Pro","quantity":-1}</code></td><td><span class="s bad">400</span> แล้ว GET ดูต้องยังชื่อเดิม</td><td>ไม่แก้ครึ่งเดียว</td></tr>
+          <tr><td><code>{"id":999}</code></td><td><span class="s bad">400</span></td><td>ห้ามแก้ id</td></tr>
+          <tr><td><code>{}</code></td><td><span class="s bad">400</span></td><td>ต้องมีอย่างน้อย 1 ฟิลด์</td></tr>
+          <tr><td><code>[1, 2]</code></td><td><span class="s bad">400</span></td><td>Body ต้องเป็น Object</td></tr>
+        </tbody>
+      </table></div>
+      <p>ทุกครั้งที่ได้ 400 ให้ GET <code>/api/equipment/101</code> ยืนยันว่าข้อมูลไม่เปลี่ยน</p>
+    </section>
+
+    <section id="delete">
+      <h2>5. Workshop DELETE</h2>
+      <p>การลบใช้ 2 คำสั่งของ Array คือ <code>findIndex()</code> หาตำแหน่ง แล้ว <code>splice(ตำแหน่ง, 1)</code> ตัดออก 1 รายการ แต่ถ้าหาไม่เจอ <code>findIndex()</code> จะคืนค่า <code>-1</code> และ <code>splice(-1, 1)</code> หมายถึงลบตัวสุดท้ายของ Array</p>
+      <div class="lab" id="splice-lab">
+        <h3>ลองลบแบบตรวจและไม่ตรวจ -1</h3>
+        <div class="arr"></div>
+        <div class="row">
+          <label>ลบ ID <input type="number" value="9999" style="width:100px"></label>
+          <button class="btn" type="button" data-run="safe">ลบแบบตรวจก่อน</button>
+          <button class="btn ghost" type="button" data-run="unsafe">ลบแบบไม่ตรวจ</button>
+          <button class="btn ghost" type="button" data-run="reset">คืนข้อมูล</button>
+        </div>
+        <div class="out" aria-live="polite">ใส่ ID 9999 แล้วกดลบแบบไม่ตรวจ ดูว่าตัวไหนหายไป</div>
+      </div>
+      <p>เพิ่ม Route DELETE ต่อจาก PATCH</p>
+      <div class="code"><div class="file">server.js</div><pre><code>app.delete('/api/equipment/:id', (req, res) =&gt; {
+  const id = parseId(req.params.id);
+  if (id === null) {
+    return res.status(400).json({ message: 'ID ต้องเป็นจำนวนเต็มบวก' });
+  }
+
+  const index = equipment.findIndex(e =&gt; e.id === id);
+  if (index === -1) {
+    return res.status(404).json({ message: `ไม่พบอุปกรณ์ ID ${id}` });
+  }
+
+  const [deleted] = equipment.splice(index, 1);
+  res.json({ message: `ลบอุปกรณ์ ID ${id} แล้ว`, deleted });
+});</code></pre></div>
+      <p><code>splice()</code> คืนค่าเป็น Array ของรายการที่ถูกตัดออก <code>const [deleted] = ...</code> ดึงตัวแรกออกมา เพื่อตอบกลับให้ Client เห็นว่าลบอะไรไป</p>
+      <div class="box note">
+        <h4>ไม่เรียง ID ใหม่ ไม่ลด nextId</h4>
+        <p>ลบ 102 แล้ว ID ที่เหลือคือ 101 กับ 103 ปล่อยให้เว้นช่องไว้แบบนั้น และ <code>nextId</code> ยังเป็นค่าเดิม เพราะ ID ใช้ระบุตัวตน ถ้าเรียงใหม่ ใบยืมที่อ้าง ID 103 ไว้จะชี้ไปผิดชิ้น</p>
+      </div>
+      <div class="chao"><span data-mascot></span><div><p class="who">เฉาก๊วยสงสัย</p><p>ประกาศ <code>equipment</code> ด้วย <code>const</code> แล้วทำไมยัง <code>splice()</code> ได้ ? เพราะ <code>const</code> แค่ห้ามเอา Array ใหม่มาแทน แต่ไม่ได้ห้ามเพิ่มหรือลบของข้างใน</p></div></div>
+      <details class="reveal"><summary>ดู server.js ฉบับเต็มของ Week 3</summary>
+      <div class="code"><div class="file">server.js</div><pre><code>import express from 'express';
+
+const app = express();
+const PORT = 3000;
+
+app.use(express.json());
+
+const equipment = [
+  { id: 101, name: 'Notebook', category: 'computer', quantity: 5 },
+  { id: 102, name: 'Projector', category: 'display', quantity: 2 },
+  { id: 103, name: 'PC', category: 'computer', quantity: 10 }
+];
+
+let nextId = 104;
+
+const ALLOWED_FIELDS = ['name', 'category', 'quantity'];
+
+function isNonEmptyString(value) {
+  return typeof value === 'string' &amp;&amp; value.trim() !== '';
+}
+
+function parseId(value) {
+  if (!/^\d+$/.test(value)) return null;
+  const id = Number(value);
+  return Number.isSafeInteger(id) &amp;&amp; id &gt; 0 ? id : null;
+}
+
+function isValidQuantity(value) {
+  return Number.isSafeInteger(value) &amp;&amp; value &gt;= 0;
+}
+
+function isPlainObject(value) {
+  return value !== null &amp;&amp; typeof value === 'object' &amp;&amp; !Array.isArray(value);
+}
+
+app.get('/', (req, res) =&gt; {
+  res.send('Hello, Backend!');
+});
+
+app.get('/api/health', (req, res) =&gt; {
+  res.json({ status: 'ok' });
+});
+
+app.get('/api/equipment', (req, res) =&gt; {
+  const { category } = req.query;
+
+  if (category === undefined) {
+    return res.json(equipment);
+  }
+
+  if (!isNonEmptyString(category)) {
+    return res.status(400).json({ message: 'category ต้องเป็นข้อความที่ไม่ว่าง' });
+  }
+
+  const keyword = category.trim().toLowerCase();
+  const result = equipment.filter(item =&gt; item.category.toLowerCase() === keyword);
+  res.json(result);
+});
+
+app.get('/api/equipment/count', (req, res) =&gt; {
+  res.json({ total: equipment.length });
+});
+
+app.get('/api/equipment/:id', (req, res) =&gt; {
+  const id = parseId(req.params.id);
+
+  if (id === null) {
+    return res.status(400).json({ message: 'ID ต้องเป็นจำนวนเต็มบวก' });
+  }
+
+  const item = equipment.find(e =&gt; e.id === id);
+
+  if (!item) {
+    return res.status(404).json({ message: `ไม่พบอุปกรณ์ ID ${id}` });
+  }
+
+  res.json(item);
+});
+
+app.post('/api/equipment', (req, res) =&gt; {
+  const body = req.body;
+
+  if (!isPlainObject(body)) {
+    return res.status(400).json({ message: 'Body ต้องเป็น JSON Object' });
+  }
+
+  const { name, category, quantity } = body;
+
+  if (!isNonEmptyString(name)) {
+    return res.status(400).json({ message: 'name ต้องเป็นข้อความที่ไม่ว่าง' });
+  }
+  if (!isNonEmptyString(category)) {
+    return res.status(400).json({ message: 'category ต้องเป็นข้อความที่ไม่ว่าง' });
+  }
+  if (!isValidQuantity(quantity)) {
+    return res.status(400).json({ message: 'quantity ต้องเป็นจำนวนเต็มตั้งแต่ 0 ขึ้นไป' });
+  }
+
+  const newItem = {
+    id: nextId++,
+    name: name.trim(),
+    category: category.trim(),
+    quantity
+  };
+
+  equipment.push(newItem);
+  res.status(201).json(newItem);
+});
+
+app.patch('/api/equipment/:id', (req, res) =&gt; {
+  const id = parseId(req.params.id);
+  if (id === null) {
+    return res.status(400).json({ message: 'ID ต้องเป็นจำนวนเต็มบวก' });
+  }
+
+  const item = equipment.find(e =&gt; e.id === id);
+  if (!item) {
+    return res.status(404).json({ message: `ไม่พบอุปกรณ์ ID ${id}` });
+  }
+
+  const body = req.body;
+  if (!isPlainObject(body)) {
+    return res.status(400).json({ message: 'Body ต้องเป็น JSON Object' });
+  }
+
+  const fields = Object.keys(body);
+  if (fields.length === 0) {
+    return res.status(400).json({ message: 'ต้องส่งอย่างน้อย 1 ฟิลด์: name, category หรือ quantity' });
+  }
+
+  const notAllowed = fields.filter(f =&gt; !ALLOWED_FIELDS.includes(f));
+  if (notAllowed.length &gt; 0) {
+    return res.status(400).json({ message: `ไม่อนุญาตให้แก้ฟิลด์: ${notAllowed.join(', ')}` });
+  }
+
+  // ขั้นที่ 1: ตรวจทุกฟิลด์ที่ส่งมา
+  if (Object.hasOwn(body, 'name') &amp;&amp; !isNonEmptyString(body.name)) {
+    return res.status(400).json({ message: 'name ต้องเป็นข้อความที่ไม่ว่าง' });
+  }
+  if (Object.hasOwn(body, 'category') &amp;&amp; !isNonEmptyString(body.category)) {
+    return res.status(400).json({ message: 'category ต้องเป็นข้อความที่ไม่ว่าง' });
+  }
+  if (Object.hasOwn(body, 'quantity') &amp;&amp; !isValidQuantity(body.quantity)) {
+    return res.status(400).json({ message: 'quantity ต้องเป็นจำนวนเต็มตั้งแต่ 0 ขึ้นไป' });
+  }
+
+  // ขั้นที่ 2: ผ่านครบแล้วจึงเปลี่ยนข้อมูล
+  if (Object.hasOwn(body, 'name')) item.name = body.name.trim();
+  if (Object.hasOwn(body, 'category')) item.category = body.category.trim();
+  if (Object.hasOwn(body, 'quantity')) item.quantity = body.quantity;
+
+  res.json(item);
+});
+
+app.delete('/api/equipment/:id', (req, res) =&gt; {
+  const id = parseId(req.params.id);
+  if (id === null) {
+    return res.status(400).json({ message: 'ID ต้องเป็นจำนวนเต็มบวก' });
+  }
+
+  const index = equipment.findIndex(e =&gt; e.id === id);
+  if (index === -1) {
+    return res.status(404).json({ message: `ไม่พบอุปกรณ์ ID ${id}` });
+  }
+
+  const [deleted] = equipment.splice(index, 1);
+  res.json({ message: `ลบอุปกรณ์ ID ${id} แล้ว`, deleted });
+});
+
+app.use((err, req, res, next) =&gt; {
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ message: 'รูปแบบ JSON ไม่ถูกต้อง' });
+  }
+  console.error(err);
+  res.status(500).json({ message: 'เกิดข้อผิดพลาดที่ Server' });
+});
+
+app.listen(PORT, () =&gt; {
+  console.log(`Server running at http://localhost:${PORT}`);
+});</code></pre></div>
+      </details>
+    </section>
+
+    <section id="challenge">
+      <span class="stage-label">ทดสอบ</span>
+      <h2>6. API Test Challenge</h2>
+      <p>รีสตาร์ต Server ก่อนเริ่ม ให้ข้อมูลกลับเป็น 3 รายการตั้งต้น แล้วทดสอบตามลำดับ <strong>ห้ามรีสตาร์ตระหว่างทดสอบ</strong> เพราะแต่ละข้อขึ้นกับผลของข้อก่อนหน้า</p>
+      <div class="table-scroll"><table>
+        <thead><tr><th>ลำดับ</th><th>การทดสอบ</th><th>ผลที่คาดหวัง</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><span class="m patch">PATCH</span> ID 101 ด้วย <code>{"quantity":8}</code></td><td><span class="s ok">200</span> และ quantity เป็น 8</td></tr>
+          <tr><td>2</td><td><span class="m patch">PATCH</span> ID 101 ด้วย <code>{"quantity":-1}</code> แล้ว <span class="m get">GET</span> ยืนยัน</td><td><span class="s bad">400</span> และค่ายังเป็น 8</td></tr>
+          <tr><td>3</td><td><span class="m patch">PATCH</span> ID 9999 ด้วยข้อมูลถูกต้อง</td><td><span class="s bad">404</span></td></tr>
+          <tr><td>4</td><td><span class="m delete">DELETE</span> ID 102</td><td><span class="s ok">200</span></td></tr>
+          <tr><td>5</td><td><span class="m get">GET</span> ID 102 หลังลบ</td><td><span class="s bad">404</span></td></tr>
+          <tr><td>6</td><td><span class="m get">GET</span> <code>/api/equipment/count</code></td><td><span class="s ok">200</span> และ <code>{"total":2}</code></td></tr>
+        </tbody>
+      </table></div>
+      <p>หลักฐานแต่ละข้อให้เห็น Method, URL, Body ที่ส่ง (ถ้ามี), Status และ Response ข้อ 2 ต้องมีภาพ GET ยืนยันว่า quantity ยังเป็น 8 ด้วย</p>
+      <h3>ซ้อมกับ API จำลอง</h3>
+      <p>ทำงานตาม <code>server.js</code> ของ Week 3 กดรีสตาร์ตก่อน แล้วกดปุ่มข้อ 1 ถึง 6 ตามลำดับ เทียบผลกับ Server ของตัวเอง</p>
+      <div class="lab sim" data-sim="3">
+        <div class="row">
+          <select aria-label="Method"><option>GET</option><option>POST</option><option>PATCH</option><option>DELETE</option></select>
+          <input class="url" type="text" value="/api/equipment/101" aria-label="URL">
+          <button class="btn send" type="button">Send</button>
+          <button class="btn ghost restart" type="button">รีสตาร์ต Server</button>
+        </div>
+        <div class="presets">
+          <button type="button" data-m="PATCH" data-u="/api/equipment/101" data-b='{"quantity":8}'>ข้อ 1</button>
+          <button type="button" data-m="PATCH" data-u="/api/equipment/101" data-b='{"quantity":-1}'>ข้อ 2</button>
+          <button type="button" data-m="GET" data-u="/api/equipment/101">ข้อ 2 GET ยืนยัน</button>
+          <button type="button" data-m="PATCH" data-u="/api/equipment/9999" data-b='{"quantity":3}'>ข้อ 3</button>
+          <button type="button" data-m="DELETE" data-u="/api/equipment/102">ข้อ 4</button>
+          <button type="button" data-m="GET" data-u="/api/equipment/102">ข้อ 5</button>
+          <button type="button" data-m="GET" data-u="/api/equipment/count">ข้อ 6</button>
+          <button type="button" data-m="PATCH" data-u="/api/equipment/101" data-b='{"id":999}'>แก้ id</button>
+          <button type="button" data-m="PATCH" data-u="/api/equipment/101" data-b='{"quantity":0}'>quantity 0</button>
+          <button type="button" data-m="DELETE" data-u="/api/equipment/abc">DELETE abc</button>
+        </div>
+        <label for="w3-body">Body (JSON)</label>
+        <textarea id="w3-body"></textarea>
+        <p>Response</p>
+        <div class="out res" aria-live="polite"><span class="dim">กด Send เพื่อดูผล</span></div>
+        <details class="reveal"><summary>ดูข้อมูลใน Server</summary><div class="out data"></div></details>
+      </div>
+    </section>
+
+    <section id="check">
+      <span class="stage-label">ตรวจผล</span>
+      <h2>ตรวจผล</h2>
+      <div class="progress" data-progress="week3"><span></span></div>
+      <ul class="checklist" data-checklist="week3">
+        <li><input type="checkbox" id="w3c1"><label for="w3c1">commit สำรองงาน JOB.02 และ push ก่อนเริ่มแก้</label></li>
+        <li><input type="checkbox" id="w3c2"><label for="w3c2">PATCH <code>{"quantity":8}</code> ได้ 200 และฟิลด์อื่นไม่เปลี่ยน</label></li>
+        <li><input type="checkbox" id="w3c3"><label for="w3c3">PATCH <code>{"quantity":0}</code> ได้ 200 และ quantity เป็น 0 จริง</label></li>
+        <li><input type="checkbox" id="w3c4"><label for="w3c4">PATCH ที่มีค่าผิดได้ 400 และ GET ยืนยันว่าข้อมูลไม่เปลี่ยนแม้แต่ฟิลด์เดียว</label></li>
+        <li><input type="checkbox" id="w3c5"><label for="w3c5">PATCH <code>{"id":999}</code>, <code>{}</code> และ <code>[1, 2]</code> ได้ 400</label></li>
+        <li><input type="checkbox" id="w3c6"><label for="w3c6">PATCH และ DELETE กับ ID <code>abc</code> ได้ 400 และ ID 9999 ได้ 404</label></li>
+        <li><input type="checkbox" id="w3c7"><label for="w3c7">DELETE ID 102 ได้ 200 ลบซ้ำได้ 404 และ count ไม่ลดซ้ำ</label></li>
+        <li><input type="checkbox" id="w3c8"><label for="w3c8">อัปเดต README ตาราง Endpoint แล้ว commit และ push</label></li>
+      </ul>
+    </section>
+
+    <section id="try">
+      <span class="stage-label">ลองเอง</span>
+      <h2>ลองเอง</h2>
+      <ol>
+        <li>เปลี่ยน <code>Object.hasOwn(body, 'quantity')</code> ชั่วคราวเป็น <code>body.quantity</code> แล้ว PATCH <code>{"quantity":0}</code> ดูว่าค่าเปลี่ยนไหม จากนั้นแก้กลับ</li>
+        <li>ลบ ID 102 แล้ว POST อุปกรณ์ใหม่ ได้ ID อะไร ทำไมไม่ใช่ 102</li>
+        <li>ถ้าระบบต้องห้ามลบอุปกรณ์ที่ quantity ยังมากกว่า 0 จะเพิ่มเงื่อนไขตรงไหน และควรตอบ Status อะไร ลองเขียนแล้วอธิบายเหตุผล</li>
+      </ol>
+    </section>
+
+    <section id="job">
+      <span class="stage-label">ส่งงาน</span>
+      <h2>JOB.03 ส่งงาน</h2>
+      <div class="job">
+        <div class="head"><h3>JOB.03 Equipment API: Update &amp; Delete</h3><span class="pts">20 คะแนน</span></div>
+        <p>ต่อยอด JOB.02 ใน Repository เดิม เพิ่ม PATCH และ DELETE อัปเดต README แล้ว commit และ push</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Method</th><th>Endpoint</th><th>ผลลัพธ์</th></tr></thead>
+          <tbody>
+            <tr><td><span class="m patch">PATCH</span></td><td><code>/api/equipment/:id</code></td><td>แก้บางฟิลด์ ตอบ <span class="s ok">200</span> / <span class="s bad">400</span> / <span class="s bad">404</span></td></tr>
+            <tr><td><span class="m delete">DELETE</span></td><td><code>/api/equipment/:id</code></td><td>ลบ ตอบ <span class="s ok">200</span> / <span class="s bad">400</span> / <span class="s bad">404</span></td></tr>
+          </tbody>
+        </table></div>
+        <h4>หลักฐานที่ต้องส่ง</h4>
+        <ul>
+          <li>ลิงก์ Repository เดิมที่ push งาน Week 3 แล้ว</li>
+          <li>README มีตาราง Endpoint ครบ CRUD</li>
+          <li>ภาพทดสอบครบ 6 กรณีของ API Test Challenge ตามลำดับ รวมภาพ GET ยืนยันในข้อ 2</li>
+        </ul>
+        <div class="table-scroll"><table>
+          <thead><tr><th>เกณฑ์</th><th class="num">คะแนน</th></tr></thead>
+          <tbody>
+            <tr><td>PATCH และ Validation</td><td class="num">8</td></tr>
+            <tr><td>DELETE และการตรวจ ID/ไม่พบข้อมูล</td><td class="num">6</td></tr>
+            <tr><td>หลักฐานทดสอบครบ 6 กรณี</td><td class="num">4</td></tr>
+            <tr><td>Git และ README</td><td class="num">2</td></tr>
+          </tbody>
+          <tfoot><tr><td>รวม</td><td class="num">20</td></tr></tfoot>
+        </table></div>
+        <p>ใช้ GenAI ช่วยได้ตามหลัก AI Work – Human Verify ก่อนส่งให้อธิบายได้ว่าทำไมโค้ดตรวจทุกฟิลด์ก่อนเปลี่ยนข้อมูล และทำไมต้องตรวจ <code>index === -1</code></p>
+      </div>
+      <p>สัปดาห์ถัดไปเราจะติดตั้ง MySQL Server และใช้ MySQL CLI โดยไม่ใช้ XAMPP เพื่อแก้ปัญหาข้อมูลหายเมื่อรีสตาร์ต</p>
+    </section>
+
+    <section id="fix">
+      <h2>แก้ปัญหาที่พบบ่อย</h2>
+      <details class="reveal"><summary>PATCH ได้ Cannot PATCH /api/equipment/101</summary>
+        <p>ยังไม่มี Route <code>app.patch</code> หรือพิมพ์เป็น <code>app.put</code> ตรวจว่าบันทึกไฟล์แล้ว และใน Thunder Client เลือก Method เป็น PATCH</p></details>
+      <details class="reveal"><summary>PATCH {"quantity":0} ได้ 200 แต่ค่าไม่เปลี่ยน</summary>
+        <p>ใช้ <code>if (body.quantity)</code> อยู่ เปลี่ยนเป็น <code>Object.hasOwn(body, 'quantity')</code></p></details>
+      <details class="reveal"><summary>ได้ 400 แต่ชื่อเปลี่ยนไปแล้ว</summary>
+        <p>โค้ดตรวจไปแก้ไป ให้ย้ายบรรทัดที่เปลี่ยนค่า <code>item.name = ...</code> ทั้งหมดลงไปไว้หลังการตรวจทุกฟิลด์</p></details>
+      <details class="reveal"><summary>DELETE ID ที่ไม่มีแล้วอุปกรณ์ตัวสุดท้ายหายไป</summary>
+        <p>ไม่ได้ตรวจ <code>index === -1</code> ก่อน <code>splice()</code> ลองกล่องทดลองในหัวข้อที่ 5 แล้วเพิ่มเงื่อนไขตอบ 404</p></details>
+      <details class="reveal"><summary>Object.hasOwn is not a function</summary>
+        <p>Node.js เก่าเกินไป ตรวจด้วย <code>node -v</code> ต้องเป็นรุ่น LTS ปัจจุบัน ถ้าต่ำกว่า 16.9 ให้ติดตั้ง Node.js รุ่น LTS ใหม่</p></details>
+      <details class="reveal"><summary>อยากย้อนโค้ดกลับไปตอนเริ่ม Week 3</summary>
+        <p>ถ้ายังไม่ได้ commit ของใหม่ ใช้ Source Control ใน VS Code คลิกขวาที่ไฟล์แล้วเลือก Discard Changes ไฟล์จะกลับไปเหมือน commit สำรองล่าสุด</p></details>
+    </section>
+
+    <section id="exit">
+      <h2>Exit Ticket</h2>
+      <p>ตอบด้วยคำพูดของตัวเองสั้น ๆ แล้วกดสรุปเพื่อคัดลอกส่งครู</p>
+      <form class="exit" data-exit="week3" data-title="Week 3" data-form-url="" novalidate>
+        <div class="who">
+          <label>ชื่อ-สกุล<input type="text" name="name" autocomplete="name"></label>
+          <label>รหัสนักศึกษา<input type="text" name="sid" inputmode="numeric"></label>
+          <label>ห้อง<input type="text" name="room"></label>
+        </div>
+        <fieldset data-q>
+          <legend>1. PATCH ต่างจาก POST อย่างไร และทำไมการแก้ quantity อย่างเดียวจึงไม่ต้องส่ง name?</legend>
+          <textarea name="q1" rows="3"></textarea>
+          <p class="hint box" hidden>แนวคำตอบ: POST สร้างรายการใหม่ ส่วน PATCH แก้บางส่วนของรายการที่มีอยู่ เราแก้เฉพาะฟิลด์ที่ส่งมา ฟิลด์ที่ไม่ได้ส่งจึงคงค่าเดิม</p>
+        </fieldset>
+        <fieldset data-q>
+          <legend>2. ทำไม if (quantity) จึงไม่เหมาะกับการตรวจข้อมูลในงานนี้?</legend>
+          <textarea name="q2" rows="3"></textarea>
+          <p class="hint box" hidden>แนวคำตอบ: 0 เป็นค่าเท็จใน JavaScript ถ้าส่ง quantity เป็น 0 มา เงื่อนไขจะเป็นเท็จเหมือนไม่ได้ส่ง ค่าจึงไม่ถูกแก้ ต้องตรวจว่ามีฟิลด์อยู่ด้วย Object.hasOwn</p>
+        </fieldset>
+        <fieldset data-q>
+          <legend>3. findIndex() คืน -1 หมายความว่าอย่างไร และต้องตรวจอะไรบ้างก่อน splice()?</legend>
+          <textarea name="q3" rows="3"></textarea>
+          <p class="hint box" hidden>แนวคำตอบ: -1 คือหาไม่พบ ต้องตรวจว่า ID รูปแบบถูก (ไม่ถูกตอบ 400) และ index ไม่เท่ากับ -1 (ถ้าเท่าตอบ 404) เพราะ splice(-1, 1) จะลบรายการสุดท้ายผิดตัว</p>
+        </fieldset>
+        <fieldset data-q>
+          <legend>4. เมื่อ DELETE สำเร็จแล้วลบ ID เดิมอีกครั้งควรตอบสถานะอะไร เพราะเหตุใด?</legend>
+          <textarea name="q4" rows="3"></textarea>
+          <p class="hint box" hidden>แนวคำตอบ: 404 เพราะ ID มีรูปแบบถูกต้อง แต่รายการนั้นถูกลบไปแล้วจึงไม่มีอยู่ในระบบ และจำนวนรายการต้องไม่ลดซ้ำ</p>
+        </fieldset>
+        <fieldset data-q>
+          <legend>5. ถ้าส่ง name ถูกต้องแต่ quantity ติดลบ ข้อมูลควรเปลี่ยนบางส่วนหรือไม่? เพราะเหตุใด?</legend>
+          <textarea name="q5" rows="3"></textarea>
+          <p class="hint box" hidden>แนวคำตอบ: ไม่ควรเปลี่ยนเลย ต้องตอบ 400 และคงข้อมูลเดิมทั้งหมด เพราะคำขอนี้ไม่ถูกต้องทั้งชุด ถ้าเปลี่ยนบางส่วน ข้อมูลในระบบจะไม่ตรงกับที่ผู้ใช้ตั้งใจ</p>
+        </fieldset>
+        <fieldset>
+          <legend>มั่นใจแค่ไหนว่าทำ JOB.03 เองได้ (1 = ยังไม่ได้เลย, 5 = สอนเพื่อนได้)</legend>
+          <div class="fist">
+            <label><input type="radio" name="fist" value="1"> 1</label>
+            <label><input type="radio" name="fist" value="2"> 2</label>
+            <label><input type="radio" name="fist" value="3"> 3</label>
+            <label><input type="radio" name="fist" value="4"> 4</label>
+            <label><input type="radio" name="fist" value="5"> 5</label>
+          </div>
+        </fieldset>
+        <div class="row"><button class="btn" type="submit">สรุปคำตอบ</button></div>
+        <p class="form-error" role="alert"></p>
+        <div class="exit-result" hidden></div>
+      </form>
+    </section>
+
+    <nav class="next" aria-label="บทถัดไป">
+      <a href="week2.html"><small>บทก่อนหน้า</small>Week 2 Building Smarter APIs</a>
+      <a href="index.html"><small>กลับ</small>หน้าแรก</a>
+    </nav>
+  </main>
+</div>
+
+<footer><p>31901-2005 การพัฒนาซอฟต์แวร์ด้วยเทคโนโลยี Back-End · แผนกวิชาเทคโนโลยีสารสนเทศ วิทยาลัยเทคนิคเลย</p></footer>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week 1 Hello, My First API! | Backend Learning Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500&family=Prompt:wght@300;400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="home" href="index.html"><span data-mascot></span>Backend Learning Hub</a>
+    <nav class="weeknav" aria-label="สัปดาห์">
+      <a href="week1.html" aria-current="page">Week 1</a>
+      <a href="week2.html">Week 2</a>
+      <a href="week3.html">Week 3</a>
+    </nav>
+    <button class="icon-btn" type="button" data-theme-toggle>โหมดมืด</button>
+  </div>
+  <div class="readbar"></div>
+</header>
+
+<div class="wrap unit-layout">
+  <nav class="toc" aria-label="สารบัญ Week 1">
+    <details open>
+      <summary>ใน Week 1</summary>
+      <ol>
+        <li><a href="#goal">เป้าหมาย</a></li>
+        <li class="grp">แนวคิด</li>
+        <li><a href="#api">1. API คืออะไร</a></li>
+        <li><a href="#node">2. Node.js กับ Express</a></li>
+        <li class="grp">ลงมือเขียน</li>
+        <li><a href="#tools">3. เตรียมเครื่อง</a></li>
+        <li><a href="#project">4. สร้างโปรเจกต์</a></li>
+        <li><a href="#server">5. server.js และ GET API</a></li>
+        <li><a href="#git">6. Git และ GitHub</a></li>
+        <li class="grp">ทดสอบและส่งงาน</li>
+        <li><a href="#test">ทดสอบด้วย Thunder Client</a></li>
+        <li><a href="#check">ตรวจผล</a></li>
+        <li><a href="#try">ลองเอง</a></li>
+        <li><a href="#job">JOB.01 ส่งงาน</a></li>
+        <li><a href="#fix">แก้ปัญหาที่พบบ่อย</a></li>
+        <li><a href="#exit">Exit Ticket</a></li>
+      </ol>
+    </details>
+  </nav>
+
+  <main class="content">
+    <section class="unit-hero" id="goal">
+      <div>
+        <p class="wk">Week 1</p>
+        <h1>Hello, My First API!</h1>
+        <p class="lead">ตอนเรียน Front-End ด้วย Vue เราเป็นฝ่ายขอข้อมูลจาก API ของคนอื่น สัปดาห์นี้เราสลับมาเป็นฝ่ายสร้าง API ที่ตอบข้อมูลอุปกรณ์ของระบบยืมคืน</p>
+        <div class="gain">
+          <h3>ทำงานนี้แล้วจะได้อะไร</h3>
+          <ul>
+            <li>เข้าใจว่าเว็บหรือแอปคุยกับ Server ผ่าน Request และ Response อย่างไร</li>
+            <li>มี Server ของตัวเองที่รันบนเครื่องและตอบข้อมูลเป็น JSON ได้</li>
+            <li>ทดสอบ API ด้วย Thunder Client ได้โดยไม่ต้องมีหน้าเว็บ</li>
+            <li>มี Repository บน GitHub ที่จะต่อยอดเป็นระบบยืมคืนอุปกรณ์ทั้งเทอม</li>
+          </ul>
+        </div>
+        <div class="flowline" aria-label="ลำดับการเรียน"><span>เป้าหมาย</span><span>แนวคิด</span><span>ลงมือเขียน</span><span>ทดสอบ</span><span>ตรวจผล</span><span>ลองเอง</span><span>ส่งงาน</span></div>
+      </div>
+      <span data-mascot></span>
+    </section>
+
+    <section id="api">
+      <span class="stage-label">แนวคิด</span>
+      <h2>1. API คืออะไร</h2>
+      <p><strong>API (Application Programming Interface)</strong> คือช่องทางที่โปรแกรมหนึ่งใช้ขอข้อมูลหรือสั่งงานอีกโปรแกรมหนึ่ง เหมือนเคาน์เตอร์ยืมอุปกรณ์ เราไม่ต้องเดินเข้าห้องเก็บของเอง แค่บอกเจ้าหน้าที่ว่าต้องการอะไร แล้วรอรับของ</p>
+      <div class="lab" id="flow-lab">
+        <h3>กดถัดไปทีละขั้น</h3>
+        <div class="flow">
+          <div><strong>Client</strong>ผู้ขอข้อมูล</div>
+          <div><strong>Request</strong>คำขอ</div>
+          <div><strong>Server</strong>ผู้ประมวลผล</div>
+          <div><strong>Response</strong>คำตอบ</div>
+        </div>
+        <p id="flow-text" aria-live="polite"></p>
+        <div class="row">
+          <button class="btn ghost" type="button" id="flow-prev">ก่อนหน้า</button>
+          <button class="btn" type="button" id="flow-next">ถัดไป</button>
+        </div>
+      </div>
+      <div class="table-scroll"><table>
+        <thead><tr><th>คำ</th><th>ความหมาย</th><th>ตัวอย่างในวิชานี้</th></tr></thead>
+        <tbody>
+          <tr><td>Client</td><td>โปรแกรมที่ส่งคำขอ</td><td>เบราว์เซอร์, Thunder Client, หน้าเว็บ Vue</td></tr>
+          <tr><td>Server</td><td>โปรแกรมที่รอรับคำขอแล้วตอบกลับ</td><td>Express ที่รันบนเครื่องเรา</td></tr>
+          <tr><td>Endpoint</td><td>ที่อยู่ของบริการแต่ละอย่าง</td><td><code>GET /api/equipment</code></td></tr>
+          <tr><td>JSON</td><td>รูปแบบข้อมูลที่ Client และ Server ใช้รับส่งกัน</td><td><code>{"status":"ok"}</code></td></tr>
+        </tbody>
+      </table></div>
+      <h3>ส่วนประกอบของ URL</h3>
+      <p><code>http://localhost:3000/api/equipment/count</code> แยกได้เป็น 4 ส่วน</p>
+      <div class="table-scroll"><table>
+        <thead><tr><th>ส่วน</th><th>ตัวอย่าง</th><th>ความหมาย</th></tr></thead>
+        <tbody>
+          <tr><td>โปรโตคอล</td><td><code>http://</code></td><td>วิธีสื่อสาร บนเครื่องตัวเองใช้ http</td></tr>
+          <tr><td>เครื่อง</td><td><code>localhost</code></td><td>เครื่องที่รัน Server</td></tr>
+          <tr><td>พอร์ต</td><td><code>:3000</code></td><td>ช่องที่ Server รอฟัง</td></tr>
+          <tr><td>พาธ</td><td><code>/api/equipment/count</code></td><td>บริการที่ต้องการ</td></tr>
+        </tbody>
+      </table></div>
+      <p><code>localhost</code> หมายถึงเครื่องของเราเอง ส่วนพอร์ต <code>3000</code> คือช่องที่ Server รอฟังอยู่ ทุก Endpoint ที่เป็นข้อมูลในวิชานี้ขึ้นต้นด้วย <code>/api</code> เพื่อแยกจากหน้าแรก <code>/</code></p>
+    </section>
+
+    <section id="node">
+      <h2>2. Node.js กับ Express</h2>
+      <p><strong>Node.js</strong> ทำให้ JavaScript ที่เราใช้ใน Vue รันนอกเบราว์เซอร์ได้ เราจึงใช้ภาษาเดียวกันเขียนได้ทั้ง Front-End และ Back-End</p>
+      <p><strong>Express</strong> คือ library บน Node.js ที่ช่วยสร้าง Server ด้วยโค้ดไม่กี่บรรทัด เราบอก Express ว่า "ถ้ามี Request แบบนี้ ให้ตอบแบบนี้" เรียกว่าการสร้าง <strong>Route</strong></p>
+      <div class="code" data-nocopy><div class="file">รูปแบบของ Route</div><pre><code>app.get('/api/health', (req, res) =&gt; {
+  res.json({ status: 'ok' });
+});
+<span class="cm">// app.get     = รับ Request แบบ GET</span>
+<span class="cm">// '/api/health' = พาธที่ต้องการ</span>
+<span class="cm">// req         = ข้อมูลที่ Client ส่งมา</span>
+<span class="cm">// res         = ใช้ส่งคำตอบกลับ</span></code></pre></div>
+      <ul class="qc">
+        <li data-correct="b" data-why="Thunder Client เป็นฝ่ายส่งคำขอ จึงเป็น Client ส่วน Express ที่ตอบกลับคือ Server">
+          <p class="q">ใช้ Thunder Client ส่ง Request ไปที่ Express ข้อใดถูก</p>
+          <button type="button" data-a="a">Thunder Client เป็น Server</button>
+          <button type="button" data-a="b">Thunder Client เป็น Client</button>
+        </li>
+      </ul>
+    </section>
+
+    <section id="tools">
+      <span class="stage-label">ลงมือเขียน</span>
+      <h2>3. เตรียมเครื่อง</h2>
+      <p>ต้องมี 4 อย่าง ถ้าเครื่องในห้องปฏิบัติการติดตั้งไว้แล้ว ให้ข้ามไปตรวจเวอร์ชันได้เลย</p>
+      <div class="table-scroll"><table>
+        <thead><tr><th>เครื่องมือ</th><th>ใช้ทำอะไร</th><th>ดาวน์โหลด</th></tr></thead>
+        <tbody>
+          <tr><td>VS Code</td><td>เขียนโค้ดและเปิด Terminal</td><td><a href="https://code.visualstudio.com/" target="_blank" rel="noopener">code.visualstudio.com</a></td></tr>
+          <tr><td>Node.js รุ่น LTS</td><td>รัน JavaScript และมี npm สำหรับติดตั้ง library</td><td><a href="https://nodejs.org/" target="_blank" rel="noopener">nodejs.org</a></td></tr>
+          <tr><td>Git</td><td>บันทึกประวัติงานและส่งขึ้น GitHub</td><td><a href="https://git-scm.com/downloads" target="_blank" rel="noopener">git-scm.com</a></td></tr>
+          <tr><td>Thunder Client</td><td>ส่ง Request ทดสอบ API ใน VS Code</td><td>ติดตั้งใน VS Code</td></tr>
+        </tbody>
+      </table></div>
+      <div class="tabs" data-remember="os">
+        <div role="tablist" aria-label="ระบบปฏิบัติการ">
+          <button role="tab" data-tab="win" aria-controls="tools-win" id="t-tools-win">Windows</button>
+          <button role="tab" data-tab="mac" aria-controls="tools-mac" id="t-tools-mac">macOS</button>
+        </div>
+        <div role="tabpanel" id="tools-win" aria-labelledby="t-tools-win">
+          <ol>
+            <li>Node.js: ดาวน์โหลดตัวติดตั้งรุ่น LTS แบบ <code>.msi</code> แล้วกด Next ตามค่าเดิมจนจบ</li>
+            <li>Git: ดาวน์โหลด Git for Windows ตอนติดตั้งให้เลือก Visual Studio Code เป็น editor ข้ออื่นใช้ค่าเดิม</li>
+            <li>ปิด VS Code ทั้งหมดแล้วเปิดใหม่ เพื่อให้ Terminal รู้จักคำสั่งที่เพิ่งติดตั้ง</li>
+          </ol>
+        </div>
+        <div role="tabpanel" id="tools-mac" aria-labelledby="t-tools-mac" hidden>
+          <ol>
+            <li>Node.js: ดาวน์โหลดตัวติดตั้งรุ่น LTS แบบ <code>.pkg</code> แล้วกด Continue จนจบ</li>
+            <li>Git: เปิด Terminal พิมพ์ <code>git --version</code> ถ้ายังไม่มี เครื่องจะถามให้ติดตั้ง Command Line Tools ให้กด Install</li>
+            <li>ปิด VS Code แล้วเปิดใหม่</li>
+          </ol>
+        </div>
+      </div>
+      <p>เปิด Terminal ใน VS Code (เมนู Terminal → New Terminal) แล้วตรวจเวอร์ชัน ต้องขึ้นเลขทุกบรรทัด</p>
+      <div class="code term"><div class="file">Terminal</div><pre><code>node -v
+npm -v
+git --version</code></pre></div>
+      <p>ติดตั้ง Thunder Client: เปิด Extensions (Ctrl/Cmd + Shift + X) ค้นหา <strong>Thunder Client</strong> แล้วกด Install จะมีไอคอนรูปสายฟ้าเพิ่มที่แถบซ้าย</p>
+      <p>ตั้งชื่อผู้ใช้ Git ครั้งเดียวต่อเครื่อง ใช้ชื่อและอีเมลเดียวกับบัญชี GitHub</p>
+      <div class="code term"><div class="file">Terminal</div><pre><code>git config --global user.name "ชื่อ นามสกุล"
+git config --global user.email "อีเมลที่ใช้สมัคร GitHub"</code></pre></div>
+    </section>
+
+    <section id="project">
+      <h2>4. สร้างโปรเจกต์</h2>
+      <ol class="steps">
+        <li><span class="t">สร้างโฟลเดอร์และเปิดใน VS Code</span>สร้างโฟลเดอร์ชื่อ <code>equipment-api</code> แล้วเปิดด้วย File → Open Folder โปรเจกต์นี้ใช้ต่อทั้งเทอม</li>
+        <li><span class="t">สร้างไฟล์ package.json</span>
+          <div class="code term"><div class="file">Terminal</div><pre><code>npm init -y</code></pre></div>
+          <code>package.json</code> คือบัตรประจำตัวของโปรเจกต์ บอกชื่อ คำสั่ง และ library ที่ใช้</li>
+        <li><span class="t">ติดตั้ง Express</span>
+          <div class="code term"><div class="file">Terminal</div><pre><code>npm install express</code></pre></div>
+          จะได้โฟลเดอร์ <code>node_modules</code> ที่เก็บโค้ดของ Express และไฟล์ <code>package-lock.json</code></li>
+        <li><span class="t">แก้ package.json</span>เพิ่ม <code>"type": "module"</code> เพื่อให้ใช้ <code>import</code> ได้ และเพิ่มคำสั่ง <code>start</code> กับ <code>dev</code>
+          <div class="code"><div class="file">package.json</div><pre><code>{
+  "name": "equipment-api",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}</code></pre></div>
+          เลขเวอร์ชันของ Express ในเครื่องอาจต่างได้ ขอให้ขึ้นต้นด้วย 5 ไม่ต้องแก้ตาม</li>
+      </ol>
+      <div class="box note">
+        <h4>ทำไมต้อง "type": "module"</h4>
+        <p>วิชานี้เขียนแบบ ES Modules คือใช้ <code>import express from 'express'</code> แบบเดียวกับใน Vue ถ้าไม่ใส่บรรทัดนี้ Node.js จะเข้าใจว่าเป็นแบบเก่าที่ใช้ <code>require</code> แล้วแจ้ง error ห้ามแก้ไปใช้ <code>require</code> แทน</p>
+      </div>
+    </section>
+
+    <section id="server">
+      <h2>5. server.js และ GET API</h2>
+      <p>สร้างไฟล์ <code>server.js</code> ในโฟลเดอร์โปรเจกต์ เริ่มจาก Server ที่ตอบหน้าแรกก่อน</p>
+      <div class="code"><div class="file">server.js</div><pre><code>import express from 'express';
+
+const app = express();
+const PORT = 3000;
+
+app.get('/', (req, res) =&gt; {
+  res.send('Hello, Backend!');
+});
+
+app.listen(PORT, () =&gt; {
+  console.log(`Server running at http://localhost:${PORT}`);
+});</code></pre></div>
+      <p>รัน Server ด้วยคำสั่ง</p>
+      <div class="code term"><div class="file">Terminal</div><pre><code>npm run dev</code></pre></div>
+      <p>ผลที่คาดหวัง: Terminal ขึ้น <code>Server running at http://localhost:3000</code> และค้างไว้แบบนั้น แปลว่า Server กำลังรอ Request อยู่ เปิดเบราว์เซอร์ไปที่ <code>http://localhost:3000</code> ต้องเห็น Hello, Backend!</p>
+      <div class="chao"><span data-mascot></span><div><p class="who">เฉาก๊วยบอก</p><p><code>npm run dev</code> ใช้ <code>node --watch</code> บันทึกไฟล์เมื่อไหร่ Server รีสตาร์ตเอง ไม่ต้องหยุดแล้วรันใหม่ ถ้าจะหยุด Server ให้คลิกที่ Terminal แล้วกด Ctrl + C</p></div></div>
+
+      <h3>res.send() กับ res.json()</h3>
+      <div class="table-scroll"><table>
+        <thead><tr><th></th><th><code>res.send()</code></th><th><code>res.json()</code></th></tr></thead>
+        <tbody>
+          <tr><td>ส่งอะไร</td><td>ข้อความหรือ HTML</td><td>Object หรือ Array ในรูปแบบ JSON</td></tr>
+          <tr><td>Content-Type</td><td><code>text/html</code></td><td><code>application/json</code></td></tr>
+          <tr><td>ใช้เมื่อ</td><td>หน้าแรก <code>/</code> ที่บอกว่า Server ทำงาน</td><td>ทุก Endpoint ใน <code>/api</code> ที่ Client จะนำข้อมูลไปใช้</td></tr>
+        </tbody>
+      </table></div>
+      <p>Content-Type บอก Client ว่าข้อมูลที่ได้เป็นชนิดไหน ถ้าเป็น <code>application/json</code> หน้าเว็บ Vue จะแปลงเป็น Object ไปใช้ต่อได้ทันที</p>
+
+      <h3>Workshop: Equipment Counter</h3>
+      <p>เพิ่มข้อมูลอุปกรณ์และ Endpoint อีก 3 ตัว ข้อมูลยังเก็บใน <strong>Array ในหน่วยความจำ</strong> ไปจนถึง Week 3</p>
+      <div class="code"><div class="file">server.js (ฉบับเต็ม)</div><pre><code>import express from 'express';
+
+const app = express();
+const PORT = 3000;
+
+const equipment = [
+  { id: 101, name: 'Notebook', category: 'computer', quantity: 5 },
+  { id: 102, name: 'Projector', category: 'display', quantity: 2 },
+  { id: 103, name: 'PC', category: 'computer', quantity: 10 }
+];
+
+app.get('/', (req, res) =&gt; {
+  res.send('Hello, Backend!');
+});
+
+app.get('/api/health', (req, res) =&gt; {
+  res.json({ status: 'ok' });
+});
+
+app.get('/api/equipment', (req, res) =&gt; {
+  res.json(equipment);
+});
+
+app.get('/api/equipment/count', (req, res) =&gt; {
+  res.json({ total: equipment.length });
+});
+
+app.listen(PORT, () =&gt; {
+  console.log(`Server running at http://localhost:${PORT}`);
+});</code></pre></div>
+      <div class="box warn">
+        <h4>length นับจำนวนรายการ ไม่ใช่ผลรวม quantity</h4>
+        <p>Array นี้มี 3 รายการ <code>equipment.length</code> จึงเป็น <code>3</code> แม้ quantity รวมกันจะได้ 5 + 2 + 10 = 17 ก็ตาม <code>/api/equipment/count</code> ตอบว่ามีอุปกรณ์กี่ <strong>ประเภท</strong> ในระบบ ไม่ใช่กี่ <strong>ชิ้น</strong></p>
+      </div>
+      <div class="table-scroll"><table>
+        <thead><tr><th>Method</th><th>Endpoint</th><th>ผลลัพธ์</th></tr></thead>
+        <tbody>
+          <tr><td><span class="m get">GET</span></td><td><code>/</code></td><td><code>Hello, Backend!</code></td></tr>
+          <tr><td><span class="m get">GET</span></td><td><code>/api/health</code></td><td><code>{"status":"ok"}</code></td></tr>
+          <tr><td><span class="m get">GET</span></td><td><code>/api/equipment</code></td><td>Array อุปกรณ์ 3 รายการ</td></tr>
+          <tr><td><span class="m get">GET</span></td><td><code>/api/equipment/count</code></td><td><code>{"total":3}</code></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="git">
+      <h2>6. Git และ GitHub</h2>
+      <p><strong>Git</strong> บันทึกประวัติการแก้โค้ดเป็นจุด ๆ เรียกว่า <strong>commit</strong> ถ้าวันหนึ่งโค้ดพังก็ย้อนกลับได้ ส่วน <strong>GitHub</strong> คือที่เก็บ Repository บนอินเทอร์เน็ต ครูตรวจงานจากที่นี่ ทุกคนใช้ Repository ของตัวเอง 1 อัน ต่อยอดทั้งเทอม</p>
+      <h3>สร้าง .gitignore ก่อน commit ครั้งแรก</h3>
+      <p>สร้างไฟล์ชื่อ <code>.gitignore</code> (มีจุดข้างหน้า) ในโฟลเดอร์โปรเจกต์ บอก Git ว่าไม่ต้องเก็บไฟล์เหล่านี้</p>
+      <div class="code"><div class="file">.gitignore</div><pre><code>node_modules/
+.env
+.DS_Store</code></pre></div>
+      <p><code>node_modules</code> มีไฟล์เป็นพันไฟล์และสร้างใหม่ได้ด้วย <code>npm install</code> ส่วน <code>.env</code> ใช้เก็บรหัสผ่านในสัปดาห์หลัง ๆ ห้ามขึ้น GitHub เด็ดขาด</p>
+      <h3>เขียน README.md</h3>
+      <p>README คือหน้าแรกของ Repository บอกคนอื่นว่าโปรเจกต์นี้คืออะไร ติดตั้งและรันอย่างไร</p>
+      <div class="code"><div class="file">README.md</div><pre><code># Equipment API
+
+API ระบบยืมคืนอุปกรณ์ รายวิชา 31901-2005
+
+## วิธีติดตั้ง
+
+npm install
+
+## วิธีรัน
+
+npm run dev
+
+แล้วเปิด http://localhost:3000
+
+## Endpoint
+
+| Method | Endpoint | ผลลัพธ์ |
+|---|---|---|
+| GET | / | Hello, Backend! |
+| GET | /api/health | {"status":"ok"} |
+| GET | /api/equipment | รายการอุปกรณ์ทั้งหมด |
+| GET | /api/equipment/count | จำนวนรายการ เช่น {"total":3} |</code></pre></div>
+      <h3>ส่งขึ้น GitHub</h3>
+      <p>สมัครหรือเข้าสู่ระบบ <a href="https://github.com/" target="_blank" rel="noopener">github.com</a> ก่อน แล้วเลือกทางใดทางหนึ่ง</p>
+      <div class="tabs">
+        <div role="tablist" aria-label="วิธีส่งขึ้น GitHub">
+          <button role="tab" data-tab="vsc" aria-controls="git-vsc" id="t-git-vsc">ผ่าน VS Code (แนะนำ)</button>
+          <button role="tab" data-tab="cli" aria-controls="git-cli" id="t-git-cli">ผ่าน Terminal</button>
+        </div>
+        <div role="tabpanel" id="git-vsc" aria-labelledby="t-git-vsc">
+          <ol>
+            <li>กดไอคอน Source Control ที่แถบซ้าย (Ctrl/Cmd + Shift + G) แล้วกด <strong>Initialize Repository</strong></li>
+            <li>พิมพ์ข้อความ commit เช่น <code>JOB.01 equipment counter API</code> แล้วกด Commit ถ้าถามเรื่อง stage ให้กด Yes</li>
+            <li>กด <strong>Publish Branch</strong> เลือก <strong>Publish to GitHub public repository</strong> ตั้งชื่อ <code>equipment-api</code></li>
+            <li>ครั้งแรก VS Code จะขอเข้าสู่ระบบ GitHub ผ่านเบราว์เซอร์ ให้กดอนุญาต</li>
+          </ol>
+        </div>
+        <div role="tabpanel" id="git-cli" aria-labelledby="t-git-cli" hidden>
+          <p>สร้าง Repository เปล่าชื่อ <code>equipment-api</code> บน GitHub ก่อน (ไม่ต้องติ๊กสร้าง README) แล้วคัดลอก URL ของ Repository มาใส่แทน</p>
+          <div class="code term"><div class="file">Terminal</div><pre><code>git init
+git add .
+git commit -m "JOB.01 equipment counter API"
+git branch -M main
+git remote add origin https://github.com/ชื่อผู้ใช้/equipment-api.git
+git push -u origin main</code></pre></div>
+        </div>
+      </div>
+      <p>ครั้งต่อไปเมื่อแก้โค้ดเสร็จ ใช้ 3 คำสั่งนี้ หรือกด Commit แล้ว Sync Changes ใน VS Code</p>
+      <div class="code term"><div class="file">Terminal</div><pre><code>git add .
+git commit -m "อธิบายสิ่งที่เปลี่ยน"
+git push</code></pre></div>
+      <p>ผลที่คาดหวัง: เปิดหน้า Repository บน GitHub แล้วเห็น <code>server.js</code>, <code>package.json</code>, <code>package-lock.json</code>, <code>.gitignore</code> และ <code>README.md</code> โดย <strong>ไม่มี</strong> โฟลเดอร์ <code>node_modules</code></p>
+    </section>
+
+    <section id="test">
+      <span class="stage-label">ทดสอบ</span>
+      <h2>ทดสอบด้วย Thunder Client</h2>
+      <ol class="steps">
+        <li><span class="t">เปิด Server ค้างไว้</span>Terminal ต้องขึ้น Server running at http://localhost:3000</li>
+        <li><span class="t">สร้าง Request ใหม่</span>กดไอคอนสายฟ้าที่แถบซ้าย แล้วกด New Request</li>
+        <li><span class="t">ใส่ Method และ URL</span>เลือก GET แล้วพิมพ์ <code>http://localhost:3000/api/health</code> กด Send</li>
+        <li><span class="t">อ่านผล</span>ดูที่ Status ต้องเป็น 200 OK และ Response ต้องเป็น <code>{"status":"ok"}</code></li>
+        <li><span class="t">ทำซ้ำจนครบทุก Endpoint</span>ถ่ายภาพหน้าจอที่เห็นทั้ง URL, Status และ Response ไว้ส่งงาน</li>
+      </ol>
+      <h3>ลองยิง Request กับ API จำลอง</h3>
+      <p>กล่องนี้ทำงานเหมือน <code>server.js</code> ฉบับเต็มด้านบน ใช้ลองก่อนหรือเทียบผลกับ Server ของตัวเอง</p>
+      <div class="lab sim" data-sim="1">
+        <div class="row">
+          <select aria-label="Method"><option>GET</option></select>
+          <input class="url" type="text" value="/api/equipment/count" aria-label="URL">
+          <button class="btn send" type="button">Send</button>
+          <button class="btn ghost restart" type="button">รีสตาร์ต Server</button>
+        </div>
+        <div class="presets">
+          <button type="button" data-m="GET" data-u="/">GET /</button>
+          <button type="button" data-m="GET" data-u="/api/health">GET /api/health</button>
+          <button type="button" data-m="GET" data-u="/api/equipment">GET /api/equipment</button>
+          <button type="button" data-m="GET" data-u="/api/equipment/count">GET /api/equipment/count</button>
+          <button type="button" data-m="GET" data-u="/api/equipments">พิมพ์พาธผิด</button>
+        </div>
+        <p>Response</p>
+        <div class="out res" aria-live="polite"><span class="dim">กด Send เพื่อดูผล</span></div>
+        <details class="reveal"><summary>ดูข้อมูลใน Server</summary><div class="out data"></div></details>
+      </div>
+    </section>
+
+    <section id="check">
+      <span class="stage-label">ตรวจผล</span>
+      <h2>ตรวจผล</h2>
+      <p>ติ๊กเมื่อทำได้จริงบนเครื่องตัวเอง ความคืบหน้าจะแสดงที่หน้าแรก</p>
+      <div class="progress" data-progress="week1"><span></span></div>
+      <ul class="checklist" data-checklist="week1">
+        <li><input type="checkbox" id="w1c1"><label for="w1c1"><code>node -v</code>, <code>npm -v</code> และ <code>git --version</code> ขึ้นเลขเวอร์ชันครบ</label></li>
+        <li><input type="checkbox" id="w1c2"><label for="w1c2"><code>npm run dev</code> แล้วขึ้น Server running at http://localhost:3000</label></li>
+        <li><input type="checkbox" id="w1c3"><label for="w1c3"><code>GET /</code> ได้ Hello, Backend!</label></li>
+        <li><input type="checkbox" id="w1c4"><label for="w1c4"><code>GET /api/health</code> ได้ 200 และ <code>{"status":"ok"}</code></label></li>
+        <li><input type="checkbox" id="w1c5"><label for="w1c5"><code>GET /api/equipment</code> ได้อุปกรณ์ครบ 3 รายการ</label></li>
+        <li><input type="checkbox" id="w1c6"><label for="w1c6"><code>GET /api/equipment/count</code> ได้ <code>{"total":3}</code></label></li>
+        <li><input type="checkbox" id="w1c7"><label for="w1c7">บน GitHub ไม่มี <code>node_modules</code> และ <code>.env</code></label></li>
+        <li><input type="checkbox" id="w1c8"><label for="w1c8">README มีวิธีติดตั้ง วิธีรัน และตาราง Endpoint</label></li>
+      </ul>
+    </section>
+
+    <section id="try">
+      <span class="stage-label">ลองเอง</span>
+      <h2>ลองเอง</h2>
+      <p>ทำเพื่อเช็กความเข้าใจ ไม่ต้องส่ง ทำเสร็จแล้วให้คืนโค้ดเป็นแบบเดิมก่อนส่งงาน</p>
+      <ol>
+        <li>เพิ่มอุปกรณ์ชิ้นที่ 4 ลงใน Array เช่น <code>{ id: 104, name: 'Speaker', category: 'audio', quantity: 3 }</code> ทายก่อนว่า <code>/api/equipment/count</code> จะได้เท่าไร แล้วทดสอบ</li>
+        <li>เปลี่ยน <code>res.json({ status: 'ok' })</code> เป็น <code>res.send('ok')</code> แล้วดู Content-Type ใน Thunder Client ว่าเปลี่ยนไปอย่างไร</li>
+        <li>ลองเรียก <code>/api/equipments</code> (เติม s) ดูว่า Express ตอบอะไรเมื่อไม่มี Route ที่ตรง</li>
+      </ol>
+    </section>
+
+    <section id="job">
+      <span class="stage-label">ส่งงาน</span>
+      <h2>JOB.01 ส่งงาน</h2>
+      <div class="job">
+        <div class="head"><h3>JOB.01 Equipment Counter</h3><span class="pts">20 คะแนน</span></div>
+        <p>สร้าง Endpoint ตามตารางในหัวข้อที่ 5 ให้ครบ ทดสอบด้วย Thunder Client เขียน README และส่ง Repository ของตัวเอง</p>
+        <h4>หลักฐานที่ต้องส่ง</h4>
+        <ul>
+          <li>ลิงก์ GitHub Repository ที่มีโค้ดและ <code>.gitignore</code> โดยไม่อัปโหลด <code>node_modules</code> หรือ <code>.env</code></li>
+          <li>ภาพทดสอบ Thunder Client ของทั้ง 4 Endpoint ให้เห็น Status และ Response Body</li>
+          <li>README อธิบายวิธีติดตั้ง วิธีรัน และรายการ Endpoint</li>
+        </ul>
+        <div class="table-scroll"><table>
+          <thead><tr><th>เกณฑ์</th><th class="num">คะแนน</th></tr></thead>
+          <tbody>
+            <tr><td>Server และ Health API</td><td class="num">4</td></tr>
+            <tr><td>Equipment และ Count</td><td class="num">8</td></tr>
+            <tr><td>ผลทดสอบ</td><td class="num">4</td></tr>
+            <tr><td>GitHub และ README</td><td class="num">4</td></tr>
+          </tbody>
+          <tfoot><tr><td>รวม</td><td class="num">20</td></tr></tfoot>
+        </table></div>
+        <p>ใช้ GenAI ช่วยได้ตามหลัก AI Work – Human Verify แต่ต้องอธิบายโค้ดทุกบรรทัดที่ส่งได้ และทดสอบเองจริง</p>
+      </div>
+    </section>
+
+    <section id="fix">
+      <h2>แก้ปัญหาที่พบบ่อย</h2>
+      <details class="reveal"><summary>Windows ขึ้น npm.ps1 cannot be loaded because running scripts is disabled</summary>
+        <p>PowerShell บล็อกการรันสคริปต์ ให้เปลี่ยน Terminal ใน VS Code เป็น Command Prompt: กดลูกศรข้างปุ่ม + ของ Terminal → Select Default Profile → Command Prompt แล้วเปิด Terminal ใหม่</p></details>
+      <details class="reveal"><summary>'node' is not recognized หรือ command not found: node</summary>
+        <p>ยังไม่ได้ติดตั้ง Node.js หรือยังไม่ได้เปิด VS Code ใหม่หลังติดตั้ง ให้ปิด VS Code ทั้งหมดแล้วเปิดใหม่ ถ้ายังไม่ได้ให้ติดตั้ง Node.js อีกครั้ง</p></details>
+      <details class="reveal"><summary>Cannot use import statement outside a module</summary>
+        <p>ยังไม่ได้ใส่ <code>"type": "module"</code> ใน <code>package.json</code> หรือใส่ผิดตำแหน่ง ต้องอยู่ในวงเล็บปีกกาชั้นนอกสุด และมีจุลภาคคั่นกับบรรทัดก่อนหน้า</p></details>
+      <details class="reveal"><summary>Error: listen EADDRINUSE: address already in use :::3000</summary>
+        <p>มี Server ตัวเก่ารันค้างอยู่ในอีก Terminal ให้หา Terminal นั้นแล้วกด Ctrl + C หรือกดไอคอนถังขยะเพื่อปิด Terminal ทั้งหมด แล้วรันใหม่</p></details>
+      <details class="reveal"><summary>Thunder Client ขึ้น Connection was refused</summary>
+        <p>Server ไม่ได้รันอยู่ ดูใน Terminal ว่ามี error หรือถูกหยุดไปหรือไม่ แล้วรัน <code>npm run dev</code> ใหม่</p></details>
+      <details class="reveal"><summary>ได้ Cannot GET /api/... ทั้งที่เขียน Route แล้ว</summary>
+        <p>พาธใน Thunder Client กับในโค้ดต้องตรงกันทุกตัวอักษร เช่น <code>equipment</code> ไม่มี s และขึ้นต้นด้วย <code>/api</code> ตรวจว่าบันทึกไฟล์แล้ว (ไม่มีจุดกลมบนแท็บไฟล์)</p></details>
+      <details class="reveal"><summary>เผลอ push node_modules ขึ้น GitHub ไปแล้ว</summary>
+        <p>สร้าง <code>.gitignore</code> ให้ถูกก่อน แล้วสั่งให้ Git เลิกติดตามโฟลเดอร์นั้น โดยไฟล์ในเครื่องยังอยู่</p>
+        <div class="code term"><pre><code>git rm -r --cached node_modules
+git commit -m "remove node_modules"
+git push</code></pre></div></details>
+    </section>
+
+    <section id="exit">
+      <h2>Exit Ticket</h2>
+      <p>ทำก่อนออกจากคาบ ตอบด้วยคำพูดของตัวเองสั้น ๆ แล้วกดสรุปเพื่อคัดลอกส่งครู</p>
+      <form class="exit" data-exit="week1" data-title="Week 1" data-form-url="" novalidate>
+        <div class="who">
+          <label>ชื่อ-สกุล<input type="text" name="name" autocomplete="name"></label>
+          <label>รหัสนักศึกษา<input type="text" name="sid" inputmode="numeric"></label>
+          <label>ห้อง<input type="text" name="room"></label>
+        </div>
+        <fieldset data-q>
+          <legend>1. API ช่วยให้ Client และ Server ติดต่อกันอย่างไร?</legend>
+          <textarea name="q1" rows="3"></textarea>
+          <p class="hint box" hidden>แนวคำตอบ: Client ส่ง Request ที่มี Method และ URL ไปยัง Endpoint ของ Server แล้ว Server ประมวลผลและส่ง Response ที่มี Status และข้อมูลกลับมา</p>
+        </fieldset>
+        <fieldset data-q>
+          <legend>2. res.send() กับ res.json() ต่างกันอย่างไร?</legend>
+          <textarea name="q2" rows="3"></textarea>
+          <p class="hint box" hidden>แนวคำตอบ: res.send() ส่งข้อความหรือ HTML ส่วน res.json() แปลง Object หรือ Array เป็น JSON และตั้ง Content-Type เป็น application/json ให้ Client นำไปใช้ต่อได้</p>
+        </fieldset>
+        <fieldset data-q>
+          <legend>3. ถ้ามี 3 รายการ แต่ quantity รวม 17 ค่า equipment.length คือเท่าไร เพราะเหตุใด?</legend>
+          <textarea name="q3" rows="3"></textarea>
+          <p class="hint box" hidden>แนวคำตอบ: ได้ 3 เพราะ length นับจำนวนสมาชิกใน Array ไม่ได้รวมค่า quantity ของแต่ละรายการ</p>
+        </fieldset>
+        <fieldset>
+          <legend>มั่นใจแค่ไหนว่าทำ JOB.01 เองได้ (1 = ยังไม่ได้เลย, 5 = สอนเพื่อนได้)</legend>
+          <div class="fist">
+            <label><input type="radio" name="fist" value="1"> 1</label>
+            <label><input type="radio" name="fist" value="2"> 2</label>
+            <label><input type="radio" name="fist" value="3"> 3</label>
+            <label><input type="radio" name="fist" value="4"> 4</label>
+            <label><input type="radio" name="fist" value="5"> 5</label>
+          </div>
+        </fieldset>
+        <div class="row"><button class="btn" type="submit">สรุปคำตอบ</button></div>
+        <p class="form-error" role="alert"></p>
+        <div class="exit-result" hidden></div>
+      </form>
+    </section>
+
+    <nav class="next" aria-label="บทถัดไป">
+      <a href="index.html"><small>กลับ</small>หน้าแรก</a>
+      <a href="week2.html"><small>บทถัดไป</small>Week 2 Building Smarter APIs</a>
+    </nav>
+  </main>
+</div>
+
+<footer><p>31901-2005 การพัฒนาซอฟต์แวร์ด้วยเทคโนโลยี Back-End · แผนกวิชาเทคโนโลยีสารสนเทศ วิทยาลัยเทคนิคเลย</p></footer>
+<script src="assets/app.js"></script>
+</body>
+</html>
